@@ -42,6 +42,9 @@ class Container:
         self.capacity = getContainerCapacity(size) # How much load you can fill (tons)
         self.load = 0                              # How much is loaded in cont.(tons)
 
+    def getId(self):
+        return self.id
+
     def getSize(self):
         return self.size
     
@@ -68,10 +71,9 @@ class Container:
 
 def createRandomContainer():
     size = containerInfos[random.randint(0,len(containerInfos)-1)]["size"]
-    container =  Container(size)
+    container =  Container(size, createContainerId())
     container.setLoad(random.randint(0, container.getCapacity()))
-    container.myfunc() # Just to verify its correct, can be removed later
-    return Container
+    return container
 
 def createRandomContainers(numberOfContainers):
     containers = []
@@ -79,6 +81,11 @@ def createRandomContainers(numberOfContainers):
         containers.append(createRandomContainer())
     return containers
 
+def createContainerId():
+    id = "JTLU"
+    for _ in range(6):
+        id += str(random.randint(0,9))
+    return id
 # p1 = Container(20, "Pst")
 # p1.myfunc()
 

@@ -6,35 +6,51 @@
 # http://www.gvct.co.uk/2011/09/how-is-the-check-digit-of-a-container-calculated/
 # Here the check digit algo is written
 
-from container import Container
+from container import Container, createRandomContainers
+
 
 class ContainerStorage:
     def __init__(self):
-        self.containers = [] 
+        self.containers = []
 
     def addContainer(self, container):
         self.containers.append(container)
+
+    def addContainers(self, containers):
+        for container in containers:
+            self.addContainer(container)
 
     def removeContainer(self, containerId):
         container = self.findContainer(containerId)
         if container == None:
             raise Exception("There is no such container")
         self.containers.remove(container)
-    
+
     def findContainer(self, containerId):
         for container in self.containers:
             if container.id == containerId:
                 return container
         return None
-    
+
+    def saveToFile(self, filename="standardSave"):
+        f = open("./trondheim-harbor/" + filename + ".txt", "w")
+        f.write("ID SIZE WEIGHT CAPACITY LOAD \n")
+        for container in self.containers:
+            f.write(container.getId() + "\t")
+            f.write(str(container.getSize()) + "\t")
+            f.write(str(container.getWeight()) + "\t")
+            f.write(str(container.getCapacity()) + "\t")
+            f.write(str(container.getLoad()) + "\t")
+            f.write("\n")
+        f.write("---")
+        f.close()
+
     def myfunc(self):
         print(self.containers)
         print(self.removeContainer("pst"))
         print(self.containers)
 
-cont = Container(20, "pst")
-cont.myfunc()
 
 p1 = ContainerStorage()
-p1.addContainer(cont)
-p1.myfunc()
+p1.addContainers(createRandomContainers(5))
+p1.saveToFile()
