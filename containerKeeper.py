@@ -33,7 +33,7 @@ class ContainerStorage:
         return None
 
     def saveToFile(self, filename="standardSave"):
-        f = open("./trondheim-harbor/" + filename + ".txt", "w")
+        f = open("./trondheim-harbor/" + filename + ".tsv", "w")
         f.write("ID SIZE WEIGHT CAPACITY LOAD \n")
         for container in self.containers:
             f.write(container.getId() + "\t")
