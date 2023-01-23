@@ -7,6 +7,10 @@
 # Here the check digit algo is written
 
 from container import Container, createRandomContainers
+import os
+
+ROOT = os.path.dirname(os.path.abspath(__file__))
+print(ROOT)
 
 
 class ContainerStorage:
@@ -33,7 +37,8 @@ class ContainerStorage:
         return None
 
     def saveToFile(self, filename="standardSave"):
-        f = open("./trondheim-harbor/" + filename + ".tsv", "w")
+        print('----')
+        f = open(os.path.join(ROOT, filename + ".tsv"), "w")
         f.write("ID SIZE WEIGHT CAPACITY LOAD \n")
         for container in self.containers:
             f.write(container.getId() + "\t")
