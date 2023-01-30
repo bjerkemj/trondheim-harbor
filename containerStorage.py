@@ -44,7 +44,7 @@ class ContainerStorage:
     def removeAllContainers(self):
         self.containers = []
 
-    def saveToFile(self, filename="standardSave"):
+    def saveToFile(self, filename="containerSave"):
         with open(os.path.join(ROOT, filename + ".tsv"), "w") as f:
             f.write("ID SIZE WEIGHT CAPACITY LOAD \n")
             for container in self.containers:
@@ -55,7 +55,7 @@ class ContainerStorage:
                 f.write(str(container.getLoad()) + "\t")
                 f.write("\n")
 
-    def readFromFile(self, filename="standardSave"):
+    def readFromFile(self, filename="containerSave"):
         self.removeAllContainers()
         with open(os.path.join(ROOT, filename + ".tsv"), "r") as f:
             f.readline()

@@ -1,10 +1,36 @@
-import container
+# 0. Imported modules and help functions
+# ----------------------------------------------
+
+from container import Container
 import containerStorage
 
 import numpy as np
+import random
 import pprint
 import random
+import os
 
+ROOT = os.path.dirname(os.path.abspath(__file__))
+
+def generateShipId(dimensions):
+        id = "IMO"
+        if(dimensions['L']<10):
+            id += "0" + str(dimensions['L'])
+        else:
+            id += str(dimensions['L'])
+        if(dimensions['W']<10):
+            id += "0" + str(dimensions['W'])
+        else:
+            id += str(dimensions['W'])
+        if(dimensions['H']<10):
+            id += "0" + str(dimensions['H'])
+        else:
+            id += str(dimensions['H'])
+        id += "-" + str(random.randint(100000,999999))
+        return id
+
+# 1. Ship
+# -------
 
 class Ship:
     defaultDimensions = {"L": 23, "W": 22, "H": 18}
@@ -37,7 +63,7 @@ T   # # # # #   H
 
     def __init__(self, dimensions=defaultDimensions, shipID=None):
         if not shipID:
-            shipID = self.generateShipID(dimensions)
+            shipID = generateShipId(dimensions)
         self.shipID = shipID
         self.dimensions = dimensions
         self.L = self.dimensions['L']
@@ -53,9 +79,8 @@ T   # # # # #   H
         # List of holes that should be filled by 20-feet containers. Elements in this list are the coordinates (h, l, w) of the holes.
         self.listOfHoles = []
 
-    def generateShipId(self, capacity):
-        # Johan
-        pass
+    def getId(self):
+        return self.shipID
 
     def findContainer(self, containerID):
         # Naive solution, can optimize this once the rest of the logic is in place
@@ -135,6 +160,116 @@ T   # # # # #   H
         print('Level:', level)
         pprint.pprint(self.boxes[level])
 
+    def getTotalWeight(self):
+        totalWeight = 0
+        for plane in self.boxes:
+                for row in plane:
+                    for container in row:
+                        totalWeight += container.getTotalWeight()
+        return totalWeight
+    
+    def getTotalWeightStarboard(self):
+        starboardInt = int(np.floor(len(self.dimensions["W"])/2))
+        totalWeight = 0
+        for plane in self.boxes:
+                for row in plane:
+                    for index in range(len(row)-starboardInt, len(row)):
+                        totalWeight += row[index].getTotalWeight()
+        return totalWeight
+
+    def getTotalWeightPort(self):
+        portInt = int(np.ceil(len(self.dimensions["W"])/2))
+        totalWeight = 0
+        for plane in self.boxes:
+                for row in plane:
+                    for index in range(portInt):
+                        totalWeight += row[index].getTotalWeight()
+        return totalWeight
+    
+    def getTotalWeightSections(self):
+        if(self.dimensions["L"]%3==0):
+            bowSize = self.dimensions["L"]/3
+            midSize = self.dimensions["L"]/3
+        elif(self.dimensions["L"]%3==1):
+            bowSize = self.dimensions["L"]/3
+            midSize = self.dimensions["L"]/3+1
+        else:
+            bowSize = self.dimensions["L"]/3+1
+            midSize = self.dimensions["L"]/3
+        sectionWeights = [0,0,0]
+        for plane in self.boxes:
+                for rowIndex in range(0, len(plane)):
+                    for container in plane[rowIndex]:
+                        if rowIndex < bowSize:
+                            sectionWeights[0] += container.getTotalWeight()
+                        if rowIndex < bowSize+midSize:
+                            sectionWeights[1] += container.getTotalWeight()
+                        else:
+                            sectionWeights[2] += container.getTotalWeight()
+        return sectionWeights
+    
+    def isShipBalanced(self, x=0.05, y=0.1):
+        weightPortside = self.getTotalWeightPort()
+        wegihtStarboard = self.getTotalWeightStarboard()
+        weightSection = self.getTotalWeightSections()
+
+        previousWeight = 0
+        for x in range(self.dimensions["W"]):
+            for y in range(self.dimensions["L"]):
+                for z in range(self.dimensions["Z"]):
+                    if(self.boxes[z][y][x] == None):
+                        continue
+                    if previousWeight > self.boxes[z][y][x].getTotalWeight():
+                        return print("Containers are not in decresing order")
+                previousWeight = 0
+        
+        if weightPortside > wegihtStarboard * (1 + x):
+            return print("Port side to heavy")
+        
+        if weightPortside < wegihtStarboard * (1 - x):
+            return print("Starboard to heavy")
+        
+        if weightSection[1] * (1 + y) > weightSection[0] or weightSection[2] * (1 + y) > weightSection[0]:
+            return print("Mid or stern section to heavy")
+
+        if weightSection[0] * (1 + y) > weightSection[1] or weightSection[2] * (1 + y) > weightSection[1]:
+            return print("Bow or stern section to heavy")
+        
+        if weightSection[0] * (1 + y) > weightSection[2] or weightSection[1] * (1 + y) > weightSection[2]:
+            return print("Bow or mid section to heavy")
+
+    def saveToFile(self, filename="shipSave"):
+        with open(os.path.join(ROOT, filename + ".tsv"), "w") as f:
+            for plane in self.boxes:
+                for row in plane:
+                    for container in row:
+                        f.write(container.getId() + "\t")
+                        f.write(str(container.getSize()) + "\t")
+                        f.write(str(container.getWeight()) + "\t")
+                        f.write(str(container.getCapacity()) + "\t")
+                        f.write(str(container.getLoad()) + "\t")
+                    f.write("-")
+                f.write("\n")
+            f.write("--\n")
+
+    def readFromFile(self, filename="shipSave"):
+        x,y,z = 0,0,0
+        with open(os.path.join(ROOT, filename + ".tsv"), "r") as f:
+            for line in f:
+                if(line == "---\n"):
+                    z+=1
+                    continue
+                rowInfo = line.split("-")
+                for info in rowInfo:
+                    infoSplitted = info.split("\t")
+                    if(len(infoSplitted)>1):
+                        container = Container(int(infoSplitted[1]), infoSplitted[0], int(infoSplitted[4]))
+                        self.boxes[z][y][x] = container
+                    x+=1
+                x=0
+            y+=1
+
+
 
 def main():
     # Generate lots of containers for testing
@@ -150,6 +285,8 @@ def main():
         containers40.append(container.Container(size, name))
 
     # [print(c.getId()) for c in containers20]
+    testDimensions = {"L": 4, "W": 3, "H": 2}
+    ship = Ship(dimensions=testDimensions)
 
     # Tests
     # ---- Test 1:
@@ -221,6 +358,9 @@ def main():
 
     # print('Base level:')
     # pprint.pprint(ship.boxes[0])
+
+    ship.saveToFile()
+    print(ship.getId())
 
 
 if __name__ == '__main__':
