@@ -149,6 +149,14 @@ T   # # # # #   H
         print('Level:', level)
         pprint.pprint(self.boxes[level])
 
+    def task11(self):
+        # TODO: Ask professor. This is assuming that we know all the containers to load in advance
+        return len(self.containerLocations)*4
+
+    def task12(self):
+        # TODO: Implement after task 10. Should optimally be 2 times the number of containers, but might not be the case if the task10 algorithm does not load with this in mind.
+        return 0
+
 
 def main():
     # Generate lots of containers for testing
