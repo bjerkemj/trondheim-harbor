@@ -3,6 +3,7 @@ import containerStorage
 
 import numpy as np
 import pprint
+import random
 
 
 class Ship:
@@ -39,18 +40,18 @@ T   # # # # #   H
             shipID = self.generateShipID(dimensions)
         self.shipID = shipID
         self.dimensions = dimensions
-        L = self.dimensions['L']
-        W = self.dimensions['W']
-        H = self.dimensions['H']
-        self.boxes = [[[None for w in range(W)]
-                       for l in range(L)] for h in range(H)]
+        self.L = self.dimensions['L']
+        self.W = self.dimensions['W']
+        self.H = self.dimensions['H']
+        self.boxes = [[[None for w in range(self.W)]
+                       for l in range(self.L)] for h in range(self.H)]
         self.l = 0
         self.w = 0
         self.h = 0
         self.nextLoadingCoordinate = (self.h, self.l, self.w)
         self.containerLocations = {}  # key is ID, value is a list of locations
         # List of holes that should be filled by 20-feet containers. Elements in this list are the coordinates (h, l, w) of the holes.
-        self.holesToFill = []
+        self.listOfHoles = []
 
     def generateShipId(self, capacity):
         # Johan
@@ -84,6 +85,20 @@ T   # # # # #   H
             return self.listOfHoles.pop(0)
         return self.nextLoadingCoordinate
 
+    def iterateCoordinate(self):
+        if self.w < self.W - 1:  # Still room in width
+            self.w += 1
+        else:
+            self.w = 0
+            if self.l < self.L - 1:  # Still room in length
+                self.l += 1
+            else:
+                self.l = 0
+                if self.h < self.H - 1:  # Still room in height
+                    self.h += 1
+                else:
+                    print('Ship is full')
+
     def loadShip(self, containersList):
         assert len(self.containerLocations) == 0,\
             print('Only works for loading empty ships')
@@ -92,11 +107,33 @@ T   # # # # #   H
             if container.getSize() == 20:
                 if len(self.listOfHoles) > 0:
                     containerLocation = self.listOfHoles.pop(0)
-                    self.containerLocations[container.getId()]
+                    print(containerLocation)
+                    self.containerLocations[container.getId()] = [(
+                        containerLocation)]
+                    self.boxes[containerLocation[0]][containerLocation[1]
+                                                     ][containerLocation[2]] = container.getId()
+                else:
+                    self.containerLocations[container.getId()] = [
+                        (self.h, self.l, self.w)]
+                    self.boxes[self.h][self.l][self.w] = container.getId()
+                    self.iterateCoordinate()
+            else:  # container size is 40
+                if self.w == self.W - 1:  # If we are on the rightmost edge, add this location as a hole and go to next row
+                    self.listOfHoles.append((self.h, self.l, self.w))
+                    self.iterateCoordinate()
+                self.containerLocations[container.getId()] = [
+                    (self.h, self.l, self.w)]
+                self.boxes[self.h][self.l][self.w] = container.getId()
+                self.iterateCoordinate()
+                self.containerLocations[container.getId()] = [
+                    (self.h, self.l, self.w)]
+                self.boxes[self.h][self.l][self.w] = container.getId()
+                self.iterateCoordinate()
 
     def printLevel(self, level: int):
+
         print('Level:', level)
-        pprint.pprint(self.boxes[int])
+        pprint.pprint(self.boxes[level])
 
 
 def main():
@@ -116,13 +153,62 @@ def main():
 
     # Tests
     # ---- Test 1:
-    # --------- Fill 3x3x3 ship with 40feet containers
+    # --------- Fill 3x3x3 ship with 9 40feet containers
     dim = {'L': 3, 'W': 3, 'H': 3}
 
-    containers = containers40[:8]
+    containers = containers40[:9]
     # [print(c.getId()) for c in containers]
     ship = Ship(dim, '3by3ship')
     ship.loadShip(containers)
+
+    for level in range(dim['H']):
+        ship.printLevel(level)
+
+    # ---- Test 2:
+    # --------- Fill 3x3x3 ship with 9 40-feet containers and 9 20-feet containers
+    dim = {'L': 3, 'W': 3, 'H': 3}
+
+    containers = containers40[:9] + containers20[:9]
+    # [print(c.getId()) for c in containers]
+    ship = Ship(dim, '3by3ship')
+    ship.loadShip(containers)
+
+    for level in range(dim['H']):
+        ship.printLevel(level)
+
+    # ---- Test 3:
+    # --------- Fill 3x3x3 ship with between random containers of size 20 and 40, filling up the entire ship
+    dim = {'L': 3, 'W': 3, 'H': 3}
+    numSpotsFilled = 0
+    containers = []
+    num20containers = 0
+    num40containers = 0
+    while numSpotsFilled < 3*3*3:
+        if numSpotsFilled == 26:
+            containers.append(containers20.pop(0))
+            numSpotsFilled += 1
+            num20containers += 1
+        else:
+            rndInt = random.randint(1, 2)
+            if rndInt == 1:
+                containers.append(containers20.pop(0))
+                numSpotsFilled += 1
+                num20containers += 1
+            else:
+                if num40containers == 8:  # not room for more than 8 containers in ship
+                    continue
+                containers.append(containers40.pop(0))
+                numSpotsFilled += 2
+                num40containers += 1
+    # [print(c.getId()) for c in containers]
+    ship = Ship(dim, '3by3ship')
+    ship.loadShip(containers)
+
+    for level in range(dim['H']):
+        ship.printLevel(level)
+    print(
+        f'#20-feet containers = {num20containers}\n#40-feet containers = {num40containers}')
+    print(ship.containerLocations)
 
     # ship.boxes[0][0][0] = '000'
     # ship.boxes[0][0][1] = '001'
