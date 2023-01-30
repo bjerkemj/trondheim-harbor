@@ -1,6 +1,7 @@
 # 0. Imported modules and help functions
 # ----------------------------------------------
 
+import container
 from container import Container
 import containerStorage
 
@@ -161,29 +162,33 @@ T   # # # # #   H
         pprint.pprint(self.boxes[level])
 
     def getTotalWeight(self):
+        # Will be problem if a 40ft container takes two spots in the three dimensional matrix
         totalWeight = 0
         for plane in self.boxes:
-                for row in plane:
+                for row in plane:  
                     for container in row:
-                        totalWeight += container.getTotalWeight()
+                        if container != None:
+                            totalWeight += container.getTotalWeight()
         return totalWeight
     
     def getTotalWeightStarboard(self):
-        starboardInt = int(np.floor(len(self.dimensions["W"])/2))
+        starboardInt = int(np.floor(self.dimensions["W"]/2))
         totalWeight = 0
         for plane in self.boxes:
                 for row in plane:
                     for index in range(len(row)-starboardInt, len(row)):
-                        totalWeight += row[index].getTotalWeight()
+                        if row[index] != None:
+                            totalWeight += row[index].getTotalWeight()
         return totalWeight
 
     def getTotalWeightPort(self):
-        portInt = int(np.ceil(len(self.dimensions["W"])/2))
+        portInt = int(np.floor(self.dimensions["W"]/2))
         totalWeight = 0
         for plane in self.boxes:
                 for row in plane:
                     for index in range(portInt):
-                        totalWeight += row[index].getTotalWeight()
+                        if row[index] != None:
+                            totalWeight += row[index].getTotalWeight()
         return totalWeight
     
     def getTotalWeightSections(self):
@@ -200,59 +205,73 @@ T   # # # # #   H
         for plane in self.boxes:
                 for rowIndex in range(0, len(plane)):
                     for container in plane[rowIndex]:
+                        if container == None:
+                            continue
                         if rowIndex < bowSize:
                             sectionWeights[0] += container.getTotalWeight()
-                        if rowIndex < bowSize+midSize:
+                        elif rowIndex < bowSize+midSize:
                             sectionWeights[1] += container.getTotalWeight()
                         else:
                             sectionWeights[2] += container.getTotalWeight()
         return sectionWeights
     
-    def isShipBalanced(self, x=0.05, y=0.1):
+    def isShipBalanced(self, x_perc=0.05, y_perc=0.1):
         weightPortside = self.getTotalWeightPort()
-        wegihtStarboard = self.getTotalWeightStarboard()
+        weightStarboard = self.getTotalWeightStarboard()
         weightSection = self.getTotalWeightSections()
 
         previousWeight = 0
         for x in range(self.dimensions["W"]):
             for y in range(self.dimensions["L"]):
-                for z in range(self.dimensions["Z"]):
-                    if(self.boxes[z][y][x] == None):
+                for z in range(self.dimensions["H"]):
+                    if z>1 and self.boxes[z][y][x] != None and self.boxes[z][y][x]:
+                        return print("There is a hole, boxes cant stand on air")
+                    elif self.boxes[z][y][x] == None:
                         continue
-                    if previousWeight > self.boxes[z][y][x].getTotalWeight():
+                    elif previousWeight > self.boxes[z][y][x].getTotalWeight():
                         return print("Containers are not in decresing order")
                 previousWeight = 0
         
-        if weightPortside > wegihtStarboard * (1 + x):
+        if weightPortside > weightStarboard * (1 + x_perc):
             return print("Port side to heavy")
         
-        if weightPortside < wegihtStarboard * (1 - x):
+        if weightPortside < weightStarboard * (1 - x_perc):
             return print("Starboard to heavy")
-        
-        if weightSection[1] * (1 + y) > weightSection[0] or weightSection[2] * (1 + y) > weightSection[0]:
+        print(weightSection)
+        if weightSection[1]  > weightSection[0] * (1 +y_perc) or weightSection[2]  > weightSection[0] * (1 +y_perc):
             return print("Mid or stern section to heavy")
 
-        if weightSection[0] * (1 + y) > weightSection[1] or weightSection[2] * (1 + y) > weightSection[1]:
+        if weightSection[0] > weightSection[1] * (1 +y_perc) or weightSection[2] > weightSection[1] * (1 +y_perc):
             return print("Bow or stern section to heavy")
         
-        if weightSection[0] * (1 + y) > weightSection[2] or weightSection[1] * (1 + y) > weightSection[2]:
+        if weightSection[0] > weightSection[2] * (1 +y_perc) or weightSection[1] > weightSection[2] * (1 +y_perc):
             return print("Bow or mid section to heavy")
+        
+        print("The ship is loaded correctly")
 
     def saveToFile(self, filename="shipSave"):
         with open(os.path.join(ROOT, filename + ".tsv"), "w") as f:
             for plane in self.boxes:
                 for row in plane:
-                    for container in row:
-                        f.write(container.getId() + "\t")
-                        f.write(str(container.getSize()) + "\t")
-                        f.write(str(container.getWeight()) + "\t")
-                        f.write(str(container.getCapacity()) + "\t")
-                        f.write(str(container.getLoad()) + "\t")
-                    f.write("-")
-                f.write("\n")
-            f.write("--\n")
+                    for index in range(len(row)):
+                        container = row[index]
+                        if container == None:
+                            f.write("None\t")
+                        else:
+                            f.write(container.getId() + "\t")
+                            f.write(str(container.getSize()) + "\t")
+                            f.write(str(container.getWeight()) + "\t")
+                            f.write(str(container.getCapacity()) + "\t")
+                            f.write(str(container.getLoad()) + "\t")
+                        if (index == (len(row)-1)):
+                            continue
+                        f.write("-\t")
+                    f.write("\n")
+                f.write("--\n")
 
     def readFromFile(self, filename="shipSave"):
+        self.boxes = [[[None for w in range(self.W)]
+                       for l in range(self.L)] for h in range(self.H)]
         x,y,z = 0,0,0
         with open(os.path.join(ROOT, filename + ".tsv"), "r") as f:
             for line in f:
@@ -261,13 +280,13 @@ T   # # # # #   H
                     continue
                 rowInfo = line.split("-")
                 for info in rowInfo:
-                    infoSplitted = info.split("\t")
+                    infoSplitted = info.strip("\n").strip("\t").split("\t")
                     if(len(infoSplitted)>1):
                         container = Container(int(infoSplitted[1]), infoSplitted[0], int(infoSplitted[4]))
                         self.boxes[z][y][x] = container
                     x+=1
                 x=0
-            y+=1
+                y+=1
 
 
 
