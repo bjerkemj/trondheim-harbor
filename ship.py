@@ -42,7 +42,7 @@ class Ship:
         self.l = 0
         self.w = 0
         self.h = 0
-        self.nextLoadingCoordinate = (self.h, self.w, self.l)
+        self.nextLoadingCoordinate = (self.h, self.l, self.w)
         self.containerLocations = {}  # key is ID, value is a list of locations
 
     def generateShipId(self, capacity):
