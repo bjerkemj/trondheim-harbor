@@ -8,16 +8,17 @@ import pprint
 class Ship:
     defaultDimensions = {"L": 23, "W": 22, "H": 18}
 
-    """ The bays/boxes is representer by a 3-d array where the outermost array is the height,
-    the second array is the width and the innermost array is the length.
+    """ The bays/boxes is representer by a 3-d array where the outermost array is the height (from 0=floor level to level H-1),
+    the second array is the position from the bow (front of the ship) (0 is at the 1st row, L-1 is the last row, aka at the bow)
+     and the innermost array is the position from left to right (0 is all the way left, W-1 is all the way right).
 
     So the place (1, 2, 3) would mean the the second plane in height, and the following
     coordinate in the  horsinotal plane (marked by O). 
     
     # # # # # 
     # # # # #
+    # # # O #
     # # # # #
-    # # O # #
     # # # # #
     # # # # # 
     # # # # # 
@@ -37,8 +38,8 @@ class Ship:
         L = self.dimensions['L']
         W = self.dimensions['W']
         H = self.dimensions['H']
-        self.boxes = [[[None for l in range(L)]
-                       for w in range(W)] for h in range(H)]
+        self.boxes = [[[None for w in range(W)]
+                       for l in range(L)] for h in range(H)]
         self.l = 0
         self.w = 0
         self.h = 0
@@ -80,12 +81,23 @@ class Ship:
         pass
 
 
-testDimensions = {"L": 4, "W": 3, "H": 2}
+def main():
+    testDimensions = {"L": 4, "W": 3, "H": 2}
 
-ship = Ship(dimensions=testDimensions, shipID='JA')
+    ship = Ship(dimensions=testDimensions, shipID='JA')
 
-pprint.pprint((ship.boxes))
+    ship.boxes[0][0][0] = '000'
+    ship.boxes[0][0][1] = '001'
+    ship.boxes[0][2][1] = '021'
+    ship.boxes[0][2][2] = '022'
 
-print(len(ship.boxes))
-print(len(ship.boxes[0]))
-print(len(ship.boxes[0][0]))
+    print(len(ship.boxes))
+    print(len(ship.boxes[0]))
+    print(len(ship.boxes[0][0]))
+
+    print('Base level:')
+    pprint.pprint(ship.boxes[0])
+
+
+if __name__ == '__main__':
+    main()
