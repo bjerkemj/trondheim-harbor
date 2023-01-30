@@ -1,3 +1,6 @@
+# 0. Imported modules and helper functions
+# ----------------------------------------
+
 import random
 
 size20 = {
@@ -32,15 +35,19 @@ def getContainerCapacity(sizeInt):
             return info["capacity"]
     raise Exception("Can't find the container size")
 
+# 1. Container
+# ------------
+
 class Container:
-    def __init__(self, size, id = "XXX"):
+    def __init__(self, size, id, load = 0):
         if not doesSizeExist(size):
+            print(doesSizeExist(size))
             raise Exception("Invalid container size")
         self.id = id
         self.size = size                           # Size of container          (feet)
         self.weight = getContainerWeight(size)     # Weight of container        (tons)
         self.capacity = getContainerCapacity(size) # How much load you can fill (tons)
-        self.load = 0                              # How much is loaded in cont.(tons)
+        self.load = load                           # How much is loaded in cont.(tons)
 
     def getId(self):
         return self.id
@@ -66,12 +73,15 @@ class Container:
         return self.load + self.weight
     
 
-    def myfunc(self):
-        print("Size: " + str(self.size) + " feet \nInitial weight: " + str(self.weight) + " tons \nLoading capacity: " + str(self.capacity) + " tons \nLoad: " + str(self.load) + " \nId: " + str(self.id) + "\n")
+    def print(self):
+        print(str(self.size) + " " + str(self.id) + " " + str(self.weight) + " " + str(self.capacity) + " " + str(self.load))
+
+# 2. Random container functions
+# -----------------------------
 
 def createRandomContainer():
     size = containerInfos[random.randint(0,len(containerInfos)-1)]["size"]
-    container =  Container(size, createContainerId())
+    container =  Container(size, createContainerId(), )
     container.setLoad(random.randint(0, container.getCapacity()))
     return container
 
@@ -86,7 +96,8 @@ def createContainerId():
     for _ in range(6):
         id += str(random.randint(0,9))
     return id
-# p1 = Container(20, "Pst")
-# p1.myfunc()
+
+# 3. Main
+# -------
 
 createRandomContainers(5)
