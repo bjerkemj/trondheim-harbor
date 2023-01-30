@@ -1,0 +1,12 @@
+Task 5:
+-For å fjerne en container, hva slags krav er det til at det gjøres 'optimalt'? Og hva slags antagelser kan vi gjøre?
+
+Task 7:
+-In the question, what is meant with 'creating the corresponding ordered list of containers'? Isn't the inpur already an ordered list of containers?
+
+Task 10:
+Our thoughts: Write a function that takes in a complete list of containers to be 
+loaded and spilt it into 6 lists of containers where each list's containers add up to approximately the same weight.
+Then we load each section with a list using existing functionality.
+
+Task 11/12:
