@@ -14,21 +14,25 @@ class Ship:
 
     So the place (1, 2, 3) would mean the the second plane in height, and the following
     coordinate in the  horsinotal plane (marked by O). 
+
+    A 20-feet ship takes one spot while a 40-feet takes two spots. All 40-feet ships are placed from left to right, NOT length-wise
     
+    FRONT OF SHIP (BOW)
+L   # # # # #   R
+E   # # # # #   I
+F   # # # O #   G
+T   # # # # #   H
+    # # # # #   T
+    # # # # # 
     # # # # # 
     # # # # #
-    # # # O #
-    # # # # #
-    # # # # #
-    # # # # # 
-    # # # # # 
-    # # # # #
+    BACK OF SHIP (STERN)
     
     
     
     Where the indexes are
-    (0,0) (1,0) (2,0) ...
-    (1,0) (1,1) () """
+    (0,0) (0,1) (0,2) ...
+    (1,0) (1,1) (1,2) ... """
 
     def __init__(self, dimensions=defaultDimensions, shipID=None):
         if not shipID:
@@ -45,15 +49,16 @@ class Ship:
         self.h = 0
         self.nextLoadingCoordinate = (self.h, self.l, self.w)
         self.containerLocations = {}  # key is ID, value is a list of locations
+        # List of holes that should be filled by 20-feet containers. Elements in this list are the coordinates (h, l, w) of the holes.
+        self.holesToFill = []
 
     def generateShipId(self, capacity):
         # Johan
         pass
 
     def findContainer(self, containerID):
-        locationOfContainer = []
         # Naive solution, can optimize this once the rest of the logic is in place
-        if not containerID in self.containerLocations:
+        if not containerID in [self.containerLocations]:
             print(f"Container {containerID} is not in ship")
         else:
             containerLocationList = self.containerLocations[containerID]
@@ -71,32 +76,65 @@ class Ship:
             self.findAavailableSize20Spot(container)
 
     def findAavailableSize40Spot(self, container):
-        # Need to check if we are on the edge. If we are on the edge
+        # Need to check if we are on the edge. If we are on the edge then go to next available double spot
         pass
 
-    def findAavailableSize40Spot(self, container):
+    def findAavailableSize20Spot(self, container):
+        if len(self.listOfHoles) > 0:
+            return self.listOfHoles.pop(0)
         return self.nextLoadingCoordinate
 
-    def loadShip(lis):
-        pass
+    def loadShip(self, containersList):
+        assert len(self.containerLocations) == 0,\
+            print('Only works for loading empty ships')
+        for cIndex in range(len(containersList)):
+            container = containersList[cIndex]
+            if container.getSize() == 20:
+                if len(self.listOfHoles) > 0:
+                    containerLocation = self.listOfHoles.pop(0)
+                    self.containerLocations[container.getId()]
+
+    def printLevel(self, level: int):
+        print('Level:', level)
+        pprint.pprint(self.boxes[int])
 
 
 def main():
-    testDimensions = {"L": 4, "W": 3, "H": 2}
+    # Generate lots of containers for testing
+    size = 20
+    containers20 = []
+    for i in range(50):
+        name = str(size) + ':' + str(i).zfill(3)
+        containers20.append(container.Container(size, name))
+    size = 40
+    containers40 = []
+    for i in range(50):
+        name = str(size) + ':' + str(i).zfill(3)
+        containers40.append(container.Container(size, name))
 
-    ship = Ship(dimensions=testDimensions, shipID='JA')
+    # [print(c.getId()) for c in containers20]
 
-    ship.boxes[0][0][0] = '000'
-    ship.boxes[0][0][1] = '001'
-    ship.boxes[0][2][1] = '021'
-    ship.boxes[0][2][2] = '022'
+    # Tests
+    # ---- Test 1:
+    # --------- Fill 3x3x3 ship with 40feet containers
+    dim = {'L': 3, 'W': 3, 'H': 3}
 
-    print(len(ship.boxes))
-    print(len(ship.boxes[0]))
-    print(len(ship.boxes[0][0]))
+    containers = containers40[:8]
+    # [print(c.getId()) for c in containers]
+    ship = Ship(dim, '3by3ship')
+    ship.loadShip(containers)
 
-    print('Base level:')
-    pprint.pprint(ship.boxes[0])
+    # ship.boxes[0][0][0] = '000'
+    # ship.boxes[0][0][1] = '001'
+    # ship.boxes[0][2][1] = '021'
+    # ship.boxes[0][2][2] = '022'
+
+    # print(len(ship.boxes))
+    # print(len(ship.boxes[0]))
+    # print(len(ship.boxes[0][0]))
+
+    # print('Base level:')
+    # pprint.pprint(ship.boxes[0])
 
 
 if __name__ == '__main__':

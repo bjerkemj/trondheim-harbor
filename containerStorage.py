@@ -17,6 +17,7 @@ print(ROOT)
 # 1. ContainerStorage
 # -------------------
 
+
 class ContainerStorage:
     def __init__(self):
         self.containers = []
@@ -39,7 +40,7 @@ class ContainerStorage:
             if container.id == containerId:
                 return container
         return None
-    
+
     def removeAllContainers(self):
         self.containers = []
 
@@ -60,16 +61,21 @@ class ContainerStorage:
             f.readline()
             for line in f:
                 containerInfo = line.split("\t")
-                container = Container(int(containerInfo[1]), containerInfo[0], int(containerInfo[4]))
+                container = Container(
+                    int(containerInfo[1]), containerInfo[0], int(containerInfo[4]))
                 self.addContainer(container)
 
     def print(self):
         for container in self.containers:
             container.print()
 
+
 # 2. Main
 # -------
-p1 = ContainerStorage()
-p1.addContainers(createRandomContainers(5))
-p1.saveToFile()
-p1.readFromFile()
+
+if __name__ == '__main__':
+    p1 = ContainerStorage()
+    p1.addContainers(createRandomContainers(5))
+    p1.print()
+    p1.saveToFile()
+    p1.readFromFile()
