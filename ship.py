@@ -104,10 +104,11 @@ T   # # # # #   H
             print('Only works for loading empty ships')
         for cIndex in range(len(containersList)):
             container = containersList[cIndex]
+            # self.printLevel(self.h)
+            # print(f"Inserting container {container.getId()}")
             if container.getSize() == 20:
                 if len(self.listOfHoles) > 0:
                     containerLocation = self.listOfHoles.pop(0)
-                    print(containerLocation)
                     self.containerLocations[container.getId()] = [(
                         containerLocation)]
                     self.boxes[containerLocation[0]][containerLocation[1]
@@ -125,13 +126,22 @@ T   # # # # #   H
                     (self.h, self.l, self.w)]
                 self.boxes[self.h][self.l][self.w] = container.getId()
                 self.iterateCoordinate()
-                self.containerLocations[container.getId()] = [
-                    (self.h, self.l, self.w)]
+                self.containerLocations[container.getId()].append(
+                    (self.h, self.l, self.w))
                 self.boxes[self.h][self.l][self.w] = container.getId()
                 self.iterateCoordinate()
 
-    def printLevel(self, level: int):
+    def loadShipInDecreasingOrder(self, containersList: list):
+        """ The weight of a container is considered as weight per 20-feet unit size, such that a 20-feet container weighing 5 tons is considered heavier than a 40-feet container weighting 9 tons """
+        sortIndexes = np.argsort([container.getTotalWeight()/2 if container.getSize() == 40 else container.getTotalWeight()
+                                 for container in containersList])
+        sortedContainerList = [containersList[index] for index in sortIndexes]
+        decreasingWeightContainerList = sortedContainerList[::-1]
+        # for cont in decreasingWeightContainerList:
+        #     print(cont.getTotalWeight(), cont.getId())
+        self.loadShip(decreasingWeightContainerList)
 
+    def printLevel(self, level: int):
         print('Level:', level)
         pprint.pprint(self.boxes[level])
 
@@ -195,7 +205,7 @@ def main():
                 numSpotsFilled += 1
                 num20containers += 1
             else:
-                if num40containers == 8:  # not room for more than 8 containers in ship
+                if num40containers == 9:  # not room for more than 8 containers in ship
                     continue
                 containers.append(containers40.pop(0))
                 numSpotsFilled += 2
@@ -208,7 +218,26 @@ def main():
         ship.printLevel(level)
     print(
         f'#20-feet containers = {num20containers}\n#40-feet containers = {num40containers}')
-    print(ship.containerLocations)
+    # print(ship.containerLocations)
+
+    # ---- Test 4:
+    # --------- Fill 3x3x3 ship with 9 40-feet containers and 9 20-feet containers and load them by weight
+    dim = {'L': 3, 'W': 3, 'H': 3}
+
+    containers = containers40[:9] + containers20[:9]
+    for cont in containers:
+        rndLoad = random.randint(0, cont.getCapacity())
+        cont.setLoad(rndLoad)
+    # [print(c.getId()) for c in containers]
+    ship = Ship(dim, '3by3ship')
+    print('ContainerList unsorted: ')
+    for cont in containers:
+        print(cont.getTotalWeight(), cont.getId())
+    print('ContainerList as loaded: ')
+    ship.loadShipInDecreasingOrder(containers)
+
+    # for level in range(dim['H']):
+    #     ship.printLevel(level)
 
     # ship.boxes[0][0][0] = '000'
     # ship.boxes[0][0][1] = '001'
