@@ -141,6 +141,10 @@ T   # # # # #   H
         #     print(cont.getTotalWeight(), cont.getId())
         self.loadShip(decreasingWeightContainerList)
 
+    def loadShipWithStabilityConstraints(self, containersList: list):
+        # TODO: Task 10, loading a set of containers into the ship taking into the stability constraints
+        pass
+
     def printLevel(self, level: int):
         print('Level:', level)
         pprint.pprint(self.boxes[level])
