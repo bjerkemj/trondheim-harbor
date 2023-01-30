@@ -46,6 +46,7 @@ class Ship:
         self.containerLocations = {}  # key is ID, value is a list of locations
 
     def generateShipId(self, capacity):
+        # Johan
         pass
 
     def findContainer(self, containerID):
@@ -74,6 +75,9 @@ class Ship:
 
     def findAavailableSize40Spot(self, container):
         return self.nextLoadingCoordinate
+
+    def loadShip(lis):
+        pass
 
 
 testDimensions = {"L": 4, "W": 3, "H": 2}
