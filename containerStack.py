@@ -20,8 +20,18 @@ class ContainerStack:
         self.weight = 0
         self.topWeight = 0
         self.containers = []
+        # The number of pops and pushes this stack has had.
+        self.numOperations = 0
+        # Note that popping and pulling two 20-feet containers counts as two operations.
 
-    def pushContainer(self, containers) -> None:
+    def _updateTopWeight(self) -> None:
+        if self.isEmpty():
+            self.topWeight = 0
+        else:
+            sum([container.getTotalWeight()
+                for container in self.containers[-1]])
+
+    def _pushContainer(self, containers) -> None:
         """ Adds the container/containers to the top of the containerStack and updates the total containerStack weight and the containerStack topWeight
 
         args:
@@ -32,9 +42,7 @@ class ContainerStack:
                 'This containerStack is full -> unable to load another container')
         else:
             if type(containers) is Container:
-                if containers.getSize() == 20:
-                    raise Exception(
-                        'A single 20 foot container cannot be loaded to a containerStack')
+
                 self.weight += containers.getTotalWeight()
                 self.topWeight = containers.getTotalWeight()
                 self.containers.append([container])
@@ -48,6 +56,24 @@ class ContainerStack:
                     self.topWeight += container.getTotalWeight()
                 self.containers.append(containers)
 
+    def addContainer(self, container):
+        if type(container) is Container:
+            if container.getSize() == 20:
+                raise Exception(
+                    'A single 20 foot container cannot be loaded to a containerStack')
+            else:
+                containerWeight = container.getTotalWeight()
+        else:  # container is a list of two Containers
+            for c in container:
+                containerWeight = 0
+                if c.getSize() == 40:
+                    raise Exception(
+                        'Only two 20-feet containers or 1 40-feet container may be loaded at the same time')
+                containerWeight += c.getTotalWeight()
+        tempStack = []
+        while containerWeight <= self.topWeight:
+            self.popContainer()
+
     def getTotalWeight(self) -> int:
         return self.weight
 
@@ -59,7 +85,13 @@ class ContainerStack:
 
     def popContainer(self):
         if not self.isEmpty():
-            return self.containers.pop()
+            popped_containers = self.containers.pop()
+            lost_weight = sum([container.getTotalWeight()
+                              for container in popped_containers])
+            self.weight += lost_weight
+            self._updateTopWeight()
+            self.numOperations += len(popped_containers)
+            return popped_containers
         else:
             raise Exception("Can't pop from an empty container")
 
