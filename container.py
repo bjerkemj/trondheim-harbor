@@ -82,7 +82,7 @@ class Container:
 
     def print(self):
         print(str(self.size) + " " + str(self.id) + " " +
-              str(self.weight) + " " + str(self.capacity) + " " + str(self.load))
+              str(self.weight) + " " + str(self.capacity) + " " + str(self.load) + ' ' + str(self.getTotalWeight()))
 
 # 2. Random container functions
 # -----------------------------
