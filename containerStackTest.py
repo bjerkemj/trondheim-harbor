@@ -95,10 +95,11 @@ def main():
 
     print('Weight management test passed')
 
-    # 2. 
+    # 2.
     # -----------------------------
 
     # print(weights)
+
 
     # 1. Test ship weight functions
     # -----------------------------
