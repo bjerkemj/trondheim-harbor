@@ -8,7 +8,7 @@ class ContainerStack:
 
     params:
     section: int
-        section number
+        The section this stack is a part of
     loc: tuple
         the location of the ContainerStack within the section, i.e (0, 0) is in the upper left corner
     maxHeight: int
