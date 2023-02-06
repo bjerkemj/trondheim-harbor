@@ -32,6 +32,9 @@ class ShipSection:
     def __init__(self, sectionID: int, width: int, length: int, maxStackHeight):
         self.freeContainerStacks = []
         self.fullContainerStacks = []
+        self.width = width
+        self.length = length
+        self.maxStackHeight = maxStackHeight
         self.sectionID = sectionID
         self.totalWeight = 0
         self.maxStackHeight = maxStackHeight
@@ -40,6 +43,18 @@ class ShipSection:
                 self.freeContainerStacks.append(ContainerStack(
                     sectionID, (w, l), maxStackHeight))
         self.full = len(self.freeContainerStacks) == 0
+
+    def getSectionId(self) -> int:
+        return self.sectionID
+    
+    def getWidth(self) -> int:
+        return self.width
+    
+    def getLength(self) -> int:
+        return self.length
+    
+    def getMaxStackHeight(self) -> int:
+        return self.maxStackHeight
 
     def updateSectionWeight(self) -> None:
         self.totalWeight = sum([containerStack.getTotalWeight() for containerStack in self.freeContainerStacks]) + sum(
@@ -72,3 +87,12 @@ class ShipSection:
 
     def getNumOperationsInSection(self) -> int:
         return sum([containerStack.getNumOperations() for containerStack in self.freeContainerStacks]) + sum([containerStack.getNumOperations() for containerStack in self.fullContainerStacks])
+    
+    def getStack(self, tuple: tuple) -> ContainerStack:
+        for stack in self.freeContainerStacks:
+            if stack.getLocation() == tuple:
+                return stack
+        for stack in self.fullContainerStacks:
+            if stack.getLocation() == tuple:
+                return stack
+        
