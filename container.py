@@ -41,20 +41,15 @@ def getContainerCapacity(sizeInt):
 # 1. Container
 # ------------
 
-
 class Container:
     def __init__(self, size, id, load=0):
         if not doesSizeExist(size):
             print(doesSizeExist(size))
             raise Exception("Invalid container size")
         self.id = id
-        # Size of container          (feet)
         self.size = size
-        # Weight of container        (tons)
         self.weight = getContainerWeight(size)
-        # How much load you can fill (tons)
         self.capacity = getContainerCapacity(size)
-        # How much is loaded in cont.(tons)
         self.load = load
 
     def getId(self):
@@ -87,20 +82,17 @@ class Container:
 # 2. Random container functions
 # -----------------------------
 
-
 def createRandomContainer():
     size = containerInfos[random.randint(0, len(containerInfos)-1)]["size"]
     container = Container(size, createContainerId(), )
     container.setLoad(random.randint(0, container.getCapacity()))
     return container
 
-
 def createRandomContainers(numberOfContainers):
     containers = []
     for i in range(numberOfContainers):
         containers.append(createRandomContainer())
     return containers
-
 
 def createContainerId():
     id = "JTLU"
@@ -111,6 +103,31 @@ def createContainerId():
 # 3. Main
 # -------
 
-
 if __name__ == '__main__':
-    createRandomContainers(5)
+    # Single container test
+    print("Single container test")
+    c1 = Container(20, "ID1", 5)
+    print("ID1 = " + c1.getId())
+    print("20 = " + str(c1.getCapacity()))
+    print("5 = " + str(c1.getLoad()))
+    print("7 = " + str(c1.getTotalWeight()))
+    print("2 = " + str(c1.getWeight()))
+    c1.print()
+    c1.setLoad(20)
+    print("20 = " + str(c1.getLoad()))
+    print("22 = " + str(c1.getTotalWeight()))
+    c2 = Container(40, "ID2", 7)
+    c2.print()
+
+    print()
+
+    # Random container test
+    random.seed(1)
+    print("Random container test")
+    r1 = createRandomContainer()
+    r1.print()
+    r1.setLoad(10)
+    print("10 = " + str(r1.getLoad()))
+    randomContainer = createRandomContainers(5)
+    for container in randomContainer:
+        container.print()
