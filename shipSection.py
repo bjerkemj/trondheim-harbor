@@ -37,13 +37,13 @@ class ShipSection:
         self.maxStackHeight = maxStackHeight
         for w in range(width):
             for l in range(length):
-                self.containerStacks.append(ContainerStack(
+                self.freeContainerStacks.append(ContainerStack(
                     sectionID, (w, l), maxStackHeight))
         self.full = len(self.freeContainerStacks) == 0
 
     def updateSectionWeight(self) -> None:
-        self.totalWeight = sum(sum([containerStack.getTotalWeight() for containerStack in self.freeContainerStacks]), sum(
-            [containerStack.getTotalWeight() for containerStack in self.fullContainerStacks]))
+        self.totalWeight = sum([containerStack.getTotalWeight() for containerStack in self.freeContainerStacks]) + sum(
+            [containerStack.getTotalWeight() for containerStack in self.fullContainerStacks])
 
     def getLowestWeightContainerStack(self) -> ContainerStack:
         containerStackWeights = [stack.getTotalWeight()
@@ -71,4 +71,4 @@ class ShipSection:
         return self.totalWeight
 
     def getNumOperationsInSection(self) -> int:
-        return sum(sum[containerStack.getNumbersOperations() for containerStack in self.freeContainerStacks], [containerStack.getNumbersOperations() for containerStack in self.fullContainerStacks])
+        return sum([containerStack.getNumOperations() for containerStack in self.freeContainerStacks]) + sum([containerStack.getNumOperations() for containerStack in self.fullContainerStacks])
