@@ -27,6 +27,7 @@ class Ship2:
             self.freeSections.append(ShipSection(
                 i, sectionWidth, sectionLength, maxHeight))
         self.full = len(self.freeSections) == 0
+        self.holdingSpot = [] # Holding spot for 
 
     def isFull(self) -> bool:
         pass
@@ -36,6 +37,15 @@ class Ship2:
 
     def isShipBalanced(self) -> bool:
         pass
+
+    def getLowestWeightShipSection(self) -> int:
+        shipSectionWeights = [shipSection.getSectionWeight() for shipSection in self.freeSections]
+        return self.freeSections[shipSectionWeights.index(min(shipSectionWeights))]
+
+    def addContainer(self, container: Container) -> None:
+        if container.size == 20:
+            if self.holdingsSpot:
+
 
 
 def main():

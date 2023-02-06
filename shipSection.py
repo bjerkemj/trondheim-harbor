@@ -69,3 +69,6 @@ class ShipSection:
 
     def getSectionWeight(self) -> int:
         return self.totalWeight
+
+    def getNumOperationsInSection(self) -> int:
+        return sum(sum[containerStack.getNumbersOperations() for containerStack in self.freeContainerStacks], [containerStack.getNumbersOperations() for containerStack in self.fullContainerStacks])
