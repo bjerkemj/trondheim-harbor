@@ -1,0 +1,15 @@
+Testing:
+Every file contains a main function where we have conducted our testing. We've mostly stuck to printing our information as a form of "sanity test" that we get expected results. We have also used some assertion testing to show how it also might be done. This done primarely to show that we master it, but doing it for every file seemed to beyond the scope of this assignment.
+
+Error handling:
+There is as little as possible of error handling in the code. This is because the program is to be viewed as a contract between the creator and user. The user is expected to read this file and the code to be able to use the program as intended.
+
+2.1 Containers
+Task 1 and 3 have been done in container.py. We created container as a class where the user can choose the size, load and ID. In the top of the file the possible container sizes are stores, which we presume the user will choose from. The user can also create one or more containers at random, where size, load and ID is created at random.
+
+!!! Kanskje dette må gjøres om til at containerStorage -> containerStack...
+Task 2 and 4 have been done in containerStorage.py.
+
+2.2 Ships
+
+2.3 Docks

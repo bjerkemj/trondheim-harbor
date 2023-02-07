@@ -96,3 +96,15 @@ class ShipSection:
             if stack.getLocation() == tuple:
                 return stack
         
+    def setStack(self, tuple: tuple, newStack: ContainerStack) -> None:
+        for stack in self.freeContainerStacks:
+            if stack.getLocation() == tuple:
+                self.freeContainerStacks.remove(stack) 
+        for stack in self.fullContainerStacks:
+            if stack.getLocation() == tuple:
+                self.fullContainerStacks.remove(stack)
+        if newStack.isFull():
+            self.fullContainerStacks.append(newStack)
+        else:
+            self.freeContainerStacks.append(newStack)
+        self.updateSectionWeight()
