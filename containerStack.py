@@ -92,6 +92,37 @@ class ContainerStack:
         while len(tempStack) > 0:  # Add containers again in decreasing weight order
             self._pushContainer(tempStack.pop())
 
+    def removeContainer(self, id: str) -> list:
+        if not self.lookForContainer(id):
+            return
+        
+        tempStack = []
+        found = False
+
+        while not found:
+            containerList = self.popContainer()
+            if len(containerList) == 2:
+                if containerList[0].getId() == id or containerList[1].getId() == id:
+                    found = True
+                else:
+                    tempStack.append(containerList)
+            else:
+                if containerList[0].getId() == id:
+                    found = True
+                else:
+                    tempStack.append(containerList)
+
+        while len(tempStack) > 0: 
+            self._pushContainer(tempStack.pop())
+        return containerList
+
+    def lookForContainer(self, id: str) -> bool:
+        for containerList in self.containers:
+            for container in containerList:
+                if container.getId() == id:
+                    return True
+        return False
+
     def getTotalWeight(self) -> int:
         return self.weight
 
@@ -135,7 +166,25 @@ class ContainerStack:
 
 def main():
     stack = ContainerStack(0, (0, 0), 100)
-    print(stack.peek())
+    # print(stack.peek())
+
+    import random
+    from container import createRandomContainers
+    random.seed(2)
+    print("Random container test")
+    randomContainer = createRandomContainers(10)
+    randomContainer = [container for container in randomContainer if container.getSize() == 40]
+    for container in randomContainer:
+        stack.addContainer(container)
+    
+    for container in stack.getContainers():
+        container[0].print()
+
+    print(stack.lookForContainer("JTLU878400"))
+    stack.removeContainer("JTLU878400")
+
+    for container in stack.getContainers():
+        container[0].print()
 
 
 if __name__ == '__main__':
