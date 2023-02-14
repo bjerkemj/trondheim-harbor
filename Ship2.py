@@ -1,6 +1,7 @@
 from container import Container
 from container import createRandomContainers
 from shipSection import ShipSection
+from containerStack import ContainerStack
 
 import numpy as np
 import random
@@ -37,14 +38,32 @@ class Ship2:
 
     def isFull(self) -> bool:
         return len(self.freeSections) == 0
+<<<<<<< HEAD
 
     def getSection(self, sectionId) -> List[ShipSection]:
+=======
+    
+    def getSection(self, sectionId: int) -> List[ShipSection]:
+>>>>>>> aa2ce29e642131543673cf85496b2e11da8e4873
         for section in self.freeSections:
             if section.getSectionId() == sectionId:
                 return section
         for section in self.fullSections:
             if section.getSectionId() == sectionId:
                 return section
+            
+    def setSection(self, sectionId: int, newSection: ShipSection) -> None:
+        for section in self.freeSections:
+            if section.getSectionId() == sectionId:
+                self.freeSections.remove(section)
+        for section in self.fullSections:
+            if section.getSectionId() == sectionId:
+                self.fullSections.remove(section)
+        
+        if newSection.isFull():
+            self.fullSections.append(newSection)
+        else:
+            self.freeSections.append(newSection)
 
     def updateShipWeight(self) -> None:  # Johan mener denne kan slettes?
         pass
@@ -77,6 +96,13 @@ class Ship2:
         return sum([shipSection.getNumOperationsInSection()
                     for shipSection in self.freeSections]) + sum([shipSection.getNumOperationsInSection()
                                                                   for shipSection in self.fullSections])
+
+    def countContainers(self) -> int:
+        count = 0
+        allSections = self.fullSections + self.freeSections
+        for section in allSections:
+            count += section.countContainers()
+        return count
 
     def getAllSections(self) -> List[ShipSection]:
         allSections = []
@@ -147,7 +173,7 @@ class Ship2:
             print("Bow or mid section to heavy")
             return False
 
-        print("The ship is loaded correctly")
+        #print("The ship is loaded correctly")
         return True
 
     def saveToFile(self, filename="shipSave"):
@@ -169,19 +195,33 @@ class Ship2:
                                 f.write("-\t")
                         f.write("\n")
 
-    def readFromFile(self, filename="shipSave"):
-        with open(os.path.join(ROOT, filename + ".tsv"), "r") as f:
-            sectionId = 0
-            widthCounter = 0
-            lengthCounter = 0
-            listFor20Containers = []
-            for line in f:
-                if line.startswith("Section: "):
-                    sectionId = int(line[9])
-                    section = self.getSection(sectionId)
-                    width = section.getWidth()
-                    length = section.getLength()
+def readFromFile(filename="shipSave", shipID = "S1") -> Ship2:
+    ship = Ship2(shipID = shipID)
+    section = None
+
+    with open(os.path.join(ROOT, filename + ".tsv"), "r") as f:
+        sectionId = 0
+        widthCounter = 0
+        lengthCounter = 0
+        listFor20Containers = []
+        for line in f:
+            if line.startswith("Section: "):
+                if section:
+                    #print(section.getSectionWeight())
+                    ship.setSection(sectionId, section)
+                    #print(ship.getSection(sectionId).getSectionWeight())
+                sectionId = int(line[9])
+                section = ShipSection(sectionId, int(ship.defaultDimensions['W']/2), int(ship.defaultDimensions['L']/6), int(ship.defaultDimensions['H']))
+                width = section.getWidth()
+                lengthCounter = 0
+                continue
+            stack = ContainerStack(sectionId, (widthCounter, lengthCounter), ship.defaultDimensions['H'])
+            rowInfo = line.split("-")
+            for info in rowInfo:
+                infoSplitted = info.strip("\n").strip("\t").split("\t")
+                if(len(infoSplitted)==1):
                     continue
+<<<<<<< HEAD
                 stack = section.getStack((widthCounter, lengthCounter))
                 rowInfo = line.split("-")
                 for info in rowInfo:
@@ -203,9 +243,26 @@ class Ship2:
                     widthCounter = 0
                     lengthCounter += 1
 
+=======
+                container = Container(int(infoSplitted[1]), infoSplitted[0], int(infoSplitted[4]))
+                if container.getSize()==40:
+                    stack.addContainer([container])
+                elif container.getSize()==20 and listFor20Containers:
+                    listFor20Containers.append(container)
+                    stack.addContainer(listFor20Containers)
+                    listFor20Containers = []
+                else:
+                    listFor20Containers.append(container)
+            section.setStack((widthCounter, lengthCounter), stack)
+            widthCounter+=1
+            if widthCounter == width:
+                widthCounter=0
+                lengthCounter+=1
+    ship.setSection(sectionId, section)
+    return ship
+>>>>>>> aa2ce29e642131543673cf85496b2e11da8e4873
 
 def main():
-
     ship = Ship2()
     numContainers = 20000
     start = time.time()
@@ -219,8 +276,8 @@ def main():
         for container in randomContainers:
             ship.addContainer(container)
             numContainersAdded += 1
-            # if not ship.isShipBalanced():
-            #     k.append(numContainersAdded)
+            if not ship.isShipBalanced():
+                k.append(numContainersAdded)
     except Exception as e:
         print('Unable to load all containers. The following exception was thrown:')
         print(e)
@@ -230,19 +287,33 @@ def main():
         print(numContainersAdded, 'added to ship')
         print(f'Script took {end - start:0f} seconds')
         print(
+<<<<<<< HEAD
             f"Number of crane operations using a single crane was: {ship.getNumberOfOperationsInShip()}")
 
+=======
+            f"Number of crane operations using a single crane was: {ship.getNumberOfOperationsInShip()}\nAmount of minutes used loading ship: {ship.getNumberOfOperationsInShip()*4}")
+    
+>>>>>>> aa2ce29e642131543673cf85496b2e11da8e4873
     print(len(ship.getAllSections()))
-    print(ship.getTotalWeight())
+    print("Total weight: " + str(ship.getTotalWeight()))
     print(ship.getTotalWeightPort())
     print(ship.getTotalWeightStarboard())
     print(ship.isShipBalanced())
     print()
-    # print(k)
+    print(k)
+    print("DSADASD")
+    print(ship.countContainers())
+    print(randomContainers[ship.countContainers()+1].getSize())
 
     ship.saveToFile()
-    ship.readFromFile()
-    ship.saveToFile("shipSave2")
+
+    ship2 = readFromFile()
+    print("Total weight: " + str(ship2.getTotalWeight()))
+    ship2.saveToFile("shipSave2")
+    # ship.readFromFile()
+    # ship.saveToFile("shipSave2")
+
+    # add bitwise check
 
 
 if __name__ == '__main__':
