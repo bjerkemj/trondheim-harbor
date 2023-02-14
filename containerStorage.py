@@ -4,7 +4,6 @@ from container import Container, createRandomContainers, doesSizeExist
 import os
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-print(ROOT)
 
 # 1. ContainerStorage
 # -------------------

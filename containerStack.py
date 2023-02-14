@@ -1,3 +1,6 @@
+import os
+ROOT = os.path.dirname(os.path.abspath(__file__))
+
 from container import Container
 
 class ContainerStack:
@@ -153,7 +156,38 @@ class ContainerStack:
 
     def getNumOperations(self) -> int:
         return self.numOperations
+    
+    def saveToFile(self, filename="containerStackSave"):
+        with open(os.path.join(ROOT, filename + ".tsv"), "w") as f:
+            for containers in self.getContainers():
+                for container in containers:
+                    f.write(container.getId() + "\t")
+                    f.write(str(container.getSize()) + "\t")
+                    f.write(str(container.getWeight()) + "\t")
+                    f.write(str(container.getCapacity()) + "\t")
+                    f.write(str(container.getLoad()) + "\t")
+                    f.write("-\t")
 
+    def readFromFile(self, filename="containerStackSave"):
+        listFor20Containers = []
+        containers = []
+        with open(os.path.join(ROOT, filename + ".tsv"), "r") as f:
+            line = f.readline()
+            rowInfo = line.split("-")
+            for info in rowInfo:
+                infoSplitted = info.strip("\n").strip("\t").split("\t")
+                if(len(infoSplitted)==1):
+                    continue
+                container = Container(int(infoSplitted[1]), infoSplitted[0], int(infoSplitted[4]))
+                if container.getSize()==40:
+                    containers.append([container])
+                elif container.getSize()==20 and listFor20Containers:
+                    listFor20Containers.append(container)
+                    containers.append(listFor20Containers)
+                    listFor20Containers = []
+                else:
+                    listFor20Containers.append(container)
+        self.containers = containers
 
 def main():
     # Initiate stack and import modules for testing
@@ -164,8 +198,6 @@ def main():
     stack = ContainerStack(0, (0, 0), 10)
     
     #print(stack.peek())
-
-    
 
     randomContainer = createRandomContainers(10)
     randomContainer = [container for container in randomContainer if container.getSize() == 40]
@@ -185,6 +217,14 @@ def main():
         container[0].print()
 
     print(stack.countContainers())
+
+    stack.saveToFile()
+    print(stack.getContainers())
+    stack2 = ContainerStack(0, (0, 0), 10)
+    stack2.readFromFile()
+    print(stack2.getContainers())
+    stack2.saveToFile("test")
+
 
 
 if __name__ == '__main__':

@@ -6,7 +6,7 @@ sys.path.insert(0, ROOT+"/..")
 from container import Container
 from containerStack import ContainerStack
 import math
-
+import filecmp
 
 def testDecreasingOrder(containerStack: ContainerStack):
     containerList = containerStack.getContainers()
@@ -95,8 +95,13 @@ def main():
         f"Total container stack weight should be 7 but was {containerStack.getTopWeight()}"
     assert containerStack.getNumOperations() == 21, \
         f"Total number of operations performed on container stack should be 21 but was {containerStack.getNumOperations()}"
-
-    print('Weight management test passed')
+    
+    containerStack.saveToFile("containerStackTestTemp")
+    assert filecmp.cmp('containerStackTestTemp.tsv', 'containerStackTestOriginal.tsv'), \
+        f"The file created should have identical content to the original save file"
+    os.remove("containerStackTestTemp.tsv")
+    
+    print('containerStackTest.py tests passed')
 
 if __name__ == '__main__':
     main()
