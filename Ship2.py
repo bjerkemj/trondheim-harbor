@@ -38,13 +38,8 @@ class Ship2:
 
     def isFull(self) -> bool:
         return len(self.freeSections) == 0
-<<<<<<< HEAD
-
-    def getSection(self, sectionId) -> List[ShipSection]:
-=======
     
     def getSection(self, sectionId: int) -> List[ShipSection]:
->>>>>>> aa2ce29e642131543673cf85496b2e11da8e4873
         for section in self.freeSections:
             if section.getSectionId() == sectionId:
                 return section
@@ -221,29 +216,6 @@ def readFromFile(filename="shipSave", shipID = "S1") -> Ship2:
                 infoSplitted = info.strip("\n").strip("\t").split("\t")
                 if(len(infoSplitted)==1):
                     continue
-<<<<<<< HEAD
-                stack = section.getStack((widthCounter, lengthCounter))
-                rowInfo = line.split("-")
-                for info in rowInfo:
-                    infoSplitted = info.strip("\n").strip("\t").split("\t")
-                    if(len(infoSplitted) == 1):
-                        continue
-                    container = Container(
-                        int(infoSplitted[1]), infoSplitted[0], int(infoSplitted[4]))
-                    if container.getSize == 40:
-                        stack.pushContainer([container])
-                    elif container.getSize == 20 and listFor20Containers:
-                        listFor20Containers.append(container)
-                        stack.pushContainer(listFor20Containers)
-                        listFor20Containers = []
-                    else:
-                        listFor20Containers.append(container)
-                widthCounter += 1
-                if widthCounter == width:
-                    widthCounter = 0
-                    lengthCounter += 1
-
-=======
                 container = Container(int(infoSplitted[1]), infoSplitted[0], int(infoSplitted[4]))
                 if container.getSize()==40:
                     stack.addContainer([container])
@@ -260,7 +232,6 @@ def readFromFile(filename="shipSave", shipID = "S1") -> Ship2:
                 lengthCounter+=1
     ship.setSection(sectionId, section)
     return ship
->>>>>>> aa2ce29e642131543673cf85496b2e11da8e4873
 
 def main():
     ship = Ship2()
@@ -287,13 +258,8 @@ def main():
         print(numContainersAdded, 'added to ship')
         print(f'Script took {end - start:0f} seconds')
         print(
-<<<<<<< HEAD
-            f"Number of crane operations using a single crane was: {ship.getNumberOfOperationsInShip()}")
-
-=======
             f"Number of crane operations using a single crane was: {ship.getNumberOfOperationsInShip()}\nAmount of minutes used loading ship: {ship.getNumberOfOperationsInShip()*4}")
     
->>>>>>> aa2ce29e642131543673cf85496b2e11da8e4873
     print(len(ship.getAllSections()))
     print("Total weight: " + str(ship.getTotalWeight()))
     print(ship.getTotalWeightPort())

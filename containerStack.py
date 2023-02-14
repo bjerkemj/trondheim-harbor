@@ -171,12 +171,17 @@ class ContainerStack:
 
 
 def main():
-    stack = ContainerStack(0, (0, 0), 100)
-    # print(stack.peek())
-
+    # Initiate stack and import modules for testing
     import random
-    from container import createRandomContainers
     random.seed(2)
+    from container import createRandomContainers
+    stack = ContainerStack(0, (0, 0), 10)
+
+    
+    print(stack.peek())
+
+    
+
     print("Random container test")
     randomContainer = createRandomContainers(10)
     randomContainer = [container for container in randomContainer if container.getSize() == 40]
