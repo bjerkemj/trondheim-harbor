@@ -1,11 +1,3 @@
-# JLT U 123456 7
-# JLT = owner of container
-# U = eqiupment category identifier (u means all freight container)
-# 123456 = serial number chosen by owner
-# 7 = check digit (calculated by the other numbers with algorithm)
-# http://www.gvct.co.uk/2011/09/how-is-the-check-digit-of-a-container-calculated/
-# Here the check digit algo is written
-
 # 0. Imported modules and additional information
 # ----------------------------------------------
 from container import Container, createRandomContainers, doesSizeExist

@@ -26,6 +26,12 @@ class ContainerStack:
 
     def getContainers(self) -> list:
         return self.containers
+    
+    def countContainers(self):
+        count = 0
+        for containerList in self.containers:
+            count+=len(containerList)
+        return count
 
     def getLocation(self) -> tuple:
         return self.loc
@@ -176,15 +182,20 @@ def main():
     randomContainer = [container for container in randomContainer if container.getSize() == 40]
     for container in randomContainer:
         stack.addContainer(container)
+    c1 = Container(20, "c1", load=15)
+    c2 = Container(20, "c2", load=15)
+    stack.addContainer([c1, c2])
     
     for container in stack.getContainers():
         container[0].print()
 
-    print(stack.lookForContainer("JTLU878400"))
-    stack.removeContainer("JTLU878400")
+    print(stack.lookForContainer("c1"))
+    print(stack.removeContainer("c1"))
 
     for container in stack.getContainers():
         container[0].print()
+
+    print(stack.countContainers())
 
 
 if __name__ == '__main__':

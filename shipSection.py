@@ -108,3 +108,10 @@ class ShipSection:
         else:
             self.freeContainerStacks.append(newStack)
         self.updateSectionWeight()
+
+    def countContainers(self):
+        count=0
+        allStacks = self.freeContainerStacks + self.fullContainerStacks
+        for stack in allStacks:
+            count+=stack.countContainers()
+        return count

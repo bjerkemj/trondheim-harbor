@@ -34,7 +34,6 @@ def generateShipId(dimensions):
 # 1. Ship
 # -------
 
-
 class Ship:
     defaultDimensions = {"L": 23, "W": 22, "H": 18}
 

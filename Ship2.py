@@ -92,6 +92,13 @@ class Ship2:
                     for shipSection in self.freeSections]) + sum([shipSection.getNumOperationsInSection()
                                                                   for shipSection in self.fullSections])
 
+    def countContainers(self) -> int:
+        count = 0
+        allSections = self.fullSections + self.freeSections
+        for section in allSections:
+            count += section.countContainers()
+        return count
+
     def getAllSections(self) -> List[ShipSection]:
         allSections = []
         for section in self.freeSections:
@@ -161,7 +168,7 @@ class Ship2:
             print("Bow or mid section to heavy")
             return False 
 
-        print("The ship is loaded correctly")
+        #print("The ship is loaded correctly")
         return True
     
     def saveToFile(self, filename="shipSave"):
@@ -237,8 +244,8 @@ def main():
         for container in randomContainers:
             ship.addContainer(container)
             numContainersAdded += 1
-            # if not ship.isShipBalanced():
-            #     k.append(numContainersAdded)
+            if not ship.isShipBalanced():
+                k.append(numContainersAdded)
     except Exception as e:
         print('Unable to load all containers. The following exception was thrown:')
         print(e)
@@ -248,7 +255,7 @@ def main():
         print(numContainersAdded, 'added to ship')
         print(f'Script took {end - start:0f} seconds')
         print(
-            f"Number of crane operations using a single crane was: {ship.getNumberOfOperationsInShip()}")
+            f"Number of crane operations using a single crane was: {ship.getNumberOfOperationsInShip()}\nAmount of minutes used loading ship: {ship.getNumberOfOperationsInShip()*4}")
     
     print(len(ship.getAllSections()))
     print("Total weight: " + str(ship.getTotalWeight()))
@@ -256,7 +263,10 @@ def main():
     print(ship.getTotalWeightStarboard())
     print(ship.isShipBalanced())
     print()
-    # print(k)
+    print(k)
+    print("DSADASD")
+    print(ship.countContainers())
+    print(randomContainers[ship.countContainers()+1].getSize())
 
     ship.saveToFile()
 
