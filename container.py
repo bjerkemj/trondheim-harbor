@@ -138,9 +138,7 @@ if __name__ == '__main__':
 
     # Random container test
     # ---------------------
-    
     random.seed(1)
-    print("Random container test")
     rc1 = createRandomContainer()
     assert isinstance(rc1, Container), \
         f"The object should be a container but was {type(c1).__name__}"
@@ -149,8 +147,10 @@ if __name__ == '__main__':
         f"Container load should be 7 but was {rc1.getLoad()}"
     
     randomContainers = createRandomContainers(5)
+    assert len(randomContainers)==5, \
+        f"The number of containers should be 5 but was {len(randomContainers)}"
     for container in randomContainers:
         assert isinstance(container, Container), \
             f"The object should be a container but was {type(container).__name__}"
 
-
+    print("container.py tests passed")

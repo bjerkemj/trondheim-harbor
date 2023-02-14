@@ -175,14 +175,13 @@ def main():
     import random
     random.seed(2)
     from container import createRandomContainers
+
     stack = ContainerStack(0, (0, 0), 10)
+    
+    #print(stack.peek())
 
     
-    print(stack.peek())
 
-    
-
-    print("Random container test")
     randomContainer = createRandomContainers(10)
     randomContainer = [container for container in randomContainer if container.getSize() == 40]
     for container in randomContainer:
