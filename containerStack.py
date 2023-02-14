@@ -1,33 +1,18 @@
 from container import Container
 
-
 class ContainerStack:
-
-    """ 
-    A class representing a stack of containers using list operations.
-
-    params:
-    section: int
-        The section this stack is a part of
-    loc: tuple
-        the location of the ContainerStack within the section, i.e (0, 0) is in the upper left corner
-    maxHeight: int
-        Maximum height (number of 40-feet container equivalents there is room for in the vertical direction) """
-
     def __init__(self, section: int, loc: tuple, maxHeight: int) -> None:
         self.loc = loc
         self.maxHeight = maxHeight
         self.weight = 0
         self.topWeight = 0
         self.containers = []
-        # The number of pops and pushes this stack has had.
         self.numOperations = 0
-        # Note that popping and pushing two 20-feet containers counts as two operations.
 
     def getContainers(self) -> list:
         return self.containers
     
-    def countContainers(self):
+    def countContainers(self) -> int:
         count = 0
         for containerList in self.containers:
             count+=len(containerList)
