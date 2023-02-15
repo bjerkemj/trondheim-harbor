@@ -11,7 +11,6 @@ from typing import List
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
-
 class Ship2:
 
     """ A class representing a ship that can be loaded with 20- and 40-feet containers. The ship is divided into 6 equally sized sections,
@@ -143,32 +142,37 @@ class Ship2:
                 sectionWeights[2] += section.getSectionWeight()
         return sectionWeights
 
-    def isShipBalanced(self, x_perc=0.05, y_perc=0.1):
+    def isShipBalanced(self, x_perc=0.05, y_perc=0.1, printOutput:bool = False):
         weightPortside = self.getTotalWeightPort()
         weightStarboard = self.getTotalWeightStarboard()
         weightSection = self.getTotalWeightSections()
 
         if weightPortside > weightStarboard * (1 + x_perc):
-            print("Port side to heavy")
+            if printOutput:
+                print("Port side to heavy")
             return False
 
         if weightPortside < weightStarboard * (1 - x_perc):
-            print("Starboard to heavy")
+            if printOutput:
+                print("Starboard to heavy")
             return False
 
         if weightSection[1] > weightSection[0] * (1 + y_perc) or weightSection[2] > weightSection[0] * (1 + y_perc):
-            print("Mid or stern section to heavy")
+            if printOutput:
+                print("Mid or stern section to heavy")
             return False
 
         if weightSection[0] > weightSection[1] * (1 + y_perc) or weightSection[2] > weightSection[1] * (1 + y_perc):
-            print("Bow or stern section to heavy")
+            if printOutput:
+                print("Bow or stern section to heavy")
             return False
 
         if weightSection[0] > weightSection[2] * (1 + y_perc) or weightSection[1] > weightSection[2] * (1 + y_perc):
-            print("Bow or mid section to heavy")
+            if printOutput:
+                print("Bow or mid section to heavy")
             return False
-
-        #print("The ship is loaded correctly")
+        if printOutput:
+            print("The ship is loaded correctly")
         return True
 
     def saveToFile(self, filename="shipSave"):
@@ -234,51 +238,38 @@ def readFromFile(filename="shipSave", shipID = "S1") -> Ship2:
     return ship
 
 def main():
+    random.seed(1)
     ship = Ship2()
     numContainers = 20000
-    start = time.time()
-
     randomContainers = createRandomContainers(numContainers)
-    print('Tid = ', time.time() - start)
-    numContainersAdded = 0
     start = time.time()
     k = []
     try:
         for container in randomContainers:
             ship.addContainer(container)
-            numContainersAdded += 1
             if not ship.isShipBalanced():
-                k.append(numContainersAdded)
+                k.append(ship.countContainers())
     except Exception as e:
         print('Unable to load all containers. The following exception was thrown:')
         print(e)
 
     finally:
         end = time.time()
-        print(numContainersAdded, 'added to ship')
         print(f'Script took {end - start:0f} seconds')
-        print(
-            f"Number of crane operations using a single crane was: {ship.getNumberOfOperationsInShip()}\nAmount of minutes used loading ship: {ship.getNumberOfOperationsInShip()*4}")
-    
-    print(len(ship.getAllSections()))
-    print("Total weight: " + str(ship.getTotalWeight()))
-    print(ship.getTotalWeightPort())
-    print(ship.getTotalWeightStarboard())
-    print(ship.isShipBalanced())
-    print()
-    print(k)
-    print("DSADASD")
-    print(ship.countContainers())
-    print(randomContainers[ship.countContainers()+1].getSize())
-
-    ship.saveToFile()
-
-    ship2 = readFromFile()
-    print("Total weight: " + str(ship2.getTotalWeight()))
-    ship2.saveToFile("shipSave2")
+        print()
+        print("Statistics of the shipload:")
+        print(f"Number of crane operations using a single crane : {ship.getNumberOfOperationsInShip()}")
+        print(f"Minutes spent loading ship: {ship.getNumberOfOperationsInShip()*4}")
+        print(f"Containers loaded: {ship.countContainers()}")
+        ship.isShipBalanced(printOutput=True)
+        print(f"Ship was balanced after container {k[-1]+1} was loaded.")
+        print(f"Total weight of ship: " + str(ship.getTotalWeight()))
+    # ship.saveToFile()
+    # ship2 = readFromFile()
+    # print("Total weight: " + str(ship2.getTotalWeight()))
+    # ship2.saveToFile("shipSave2")
     # ship.readFromFile()
     # ship.saveToFile("shipSave2")
-
     # add bitwise check
 
 

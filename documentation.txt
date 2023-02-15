@@ -1,15 +1,15 @@
 Tinus F Alsos og Johan Bjerkem
 
 Testing:
-Every file contains a main function where we have conducted our testing. We've mostly stuck to printing our information as a form of "sanity test" to check that we get the expected results. We have also used some assertion testing to show how it also might be done. This done primarely to show that we master it, but doing it for every file seemed beyond the scope of this assignment.
+We have tested the files using assertion tests. These tests can be found in the folder tests. Here you can run the tests for each file induvidually. Other then that we have a main method in the ship.py which simulates the loading of a ship. This main method prints the results and was a sanity check that our program runs as expected.
 
 Error handling:
-There isn't a lot of error handling in the code. This is because the program is to be viewed as a contract between the creator and user. The user is expected to read this file and the code to be able to use the program as intended.
+There isn't a lot of error handling in the code. This is because the program is to be viewed as a contract between the creator and user. The user is expected to read this file and the code to be able to use the program as intended. The user can also look at the main in ship.py to see how one uses the program with regards to ship handeling.
 
 2.1 Containers
-Task 1 and 3 have been done in container.py. We created container as a class where the user can choose the size, load and ID. In the top of the file the possible container sizes are stores, which we presume the user will choose from. The user can also create one or more containers at random, where size, load and ID is created at random.
+Task 1 and 3 have been done in container.py. We created container as a class where the user can choose the size, load and ID. In the top of the file the possible container sizes are stored. The user can also create one or more containers at random, where size, load and ID is created at random.
 
-Task 2 and 4 have been done in containerStack.py. The datastructure is created with the future architecture of the ship in mind. Therefore each level in a stack contains either a 40ft container or two 20ft containers. This means removing a 20ft container results in both containers at the same level being retrieved, so that the user of the program can decide what to do with the other container. Each stack is imagined to be handled by a crane, so to remove a container at the bottom, all the container on top need to be moved first.
+Task 2 and 4 have been done in containerStack.py. The datastructure is created with the future architecture of the ship in mind. Therefore each level in a stack contains either a 40ft container or two 20ft containers. This means removing a 20ft container results in both containers at the same level being retrieved, so that the user of the program can decide what to do with the other container. Each stack is imagined to be handled by a crane, so to remove a container at the bottom, all the container on top of the container needs to be moved first.
 
 2.2 Ships 
 Task 5 has been done the containerStack.py, shipSection.py and ship.py. This is a hierarchical structure where a Ship has 6 ShipSections and each ShipSection has one ContainerStack for each cell in base of the ship. When a 20ft container is loaded we wait for the next one so we can ensure that there a no holes. 
