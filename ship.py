@@ -11,7 +11,7 @@ import time
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
-class Ship2:
+class Ship:
     defaultDimensions = {"L": 24, "W": 22, "H": 18}
 
     def __init__(self, dimensions: dict = defaultDimensions, shipID: str=None):
@@ -187,8 +187,8 @@ class Ship2:
                                 f.write("-\t")
                         f.write("\n")
 
-def readFromFile(filename: str = "shipSave", shipID: str = None) -> Ship2:
-    ship = Ship2(shipID = shipID)
+def readFromFile(filename: str = "shipSave", shipID: str = None) -> Ship:
+    ship = Ship(shipID = shipID)
     section = None
 
     with open(os.path.join(ROOT, filename + ".tsv"), "r") as f:
@@ -232,7 +232,7 @@ def readFromFile(filename: str = "shipSave", shipID: str = None) -> Ship2:
 
 def main():
     random.seed(1)
-    ship = Ship2()
+    ship = Ship()
     numContainers = 20000
     randomContainers = createRandomContainers(numContainers)
     start = time.time()
