@@ -12,13 +12,9 @@ import time
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
 class Ship2:
-
-    """ A class representing a ship that can be loaded with 20- and 40-feet containers. The ship is divided into 6 equally sized sections,
-     where section 0 and 1 is a the bow (front), 2 and 3 is the middle, and 4 and 5 is the stern (back). Odd number is starboard (right) and even is port (left). """
     defaultDimensions = {"L": 24, "W": 22, "H": 18}
 
     def __init__(self, dimensions: dict = defaultDimensions, shipID: str=None):
-        """ NB: Currently only works when L is divisble by 3 and W is divisible by 2 """
         self.dimensions = dimensions
         self.shipID = shipID
         self.height = dimensions['H']
@@ -61,12 +57,6 @@ class Ship2:
             self.fullSections.append(newSection)
         else:
             self.freeSections.append(newSection)
-
-    def updateShipWeight(self) -> None:  # Johan mener denne kan slettes?
-        pass
-
-    def isShipBalanced(self) -> bool:
-        pass
 
     def getLowestWeightShipSection(self) -> ShipSection:
         shipSectionWeights = [shipSection.getSectionWeight()
