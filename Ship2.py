@@ -6,8 +6,8 @@ from containerStack import ContainerStack
 import numpy as np
 import random
 import os
+import filecmp
 import time
-from typing import List
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -17,7 +17,7 @@ class Ship2:
      where section 0 and 1 is a the bow (front), 2 and 3 is the middle, and 4 and 5 is the stern (back). Odd number is starboard (right) and even is port (left). """
     defaultDimensions = {"L": 24, "W": 22, "H": 18}
 
-    def __init__(self, dimensions=defaultDimensions, shipID=None) -> None:
+    def __init__(self, dimensions: dict = defaultDimensions, shipID: str=None):
         """ NB: Currently only works when L is divisble by 3 and W is divisible by 2 """
         self.dimensions = dimensions
         self.shipID = shipID
@@ -35,10 +35,13 @@ class Ship2:
         self.full = len(self.freeSections) == 0
         self.holdingSpot = []  # Holding spot for a single 20-feet container
 
+    def getShipID(self):
+        return self.shipID
+
     def isFull(self) -> bool:
         return len(self.freeSections) == 0
     
-    def getSection(self, sectionId: int) -> List[ShipSection]:
+    def getSection(self, sectionId: int) -> list[ShipSection]:
         for section in self.freeSections:
             if section.getSectionId() == sectionId:
                 return section
@@ -98,7 +101,7 @@ class Ship2:
             count += section.countContainers()
         return count
 
-    def getAllSections(self) -> List[ShipSection]:
+    def getAllSections(self) -> list[ShipSection]:
         allSections = []
         for section in self.freeSections:
             allSections.append(section)
@@ -129,7 +132,7 @@ class Ship2:
                 totalWeightPort += section.getSectionWeight()
         return totalWeightPort
 
-    def getTotalWeightSections(self) -> List[int]:
+    def getTotalWeightSections(self) -> list[int]:
         sectionWeights = [0, 0, 0]
         allSections = self.getAllSections()
         for section in allSections:
@@ -142,7 +145,7 @@ class Ship2:
                 sectionWeights[2] += section.getSectionWeight()
         return sectionWeights
 
-    def isShipBalanced(self, x_perc=0.05, y_perc=0.1, printOutput:bool = False):
+    def isShipBalanced(self, x_perc=0.05, y_perc=0.1, printOutput:bool = False) -> bool:
         weightPortside = self.getTotalWeightPort()
         weightStarboard = self.getTotalWeightStarboard()
         weightSection = self.getTotalWeightSections()
@@ -175,7 +178,7 @@ class Ship2:
             print("The ship is loaded correctly")
         return True
 
-    def saveToFile(self, filename="shipSave"):
+    def saveToFile(self, filename: str = "shipSave") -> None:
         with open(os.path.join(ROOT, filename + ".tsv"), "w") as f:
             allSections = self.getAllSections()
             for section in allSections:
@@ -194,7 +197,7 @@ class Ship2:
                                 f.write("-\t")
                         f.write("\n")
 
-def readFromFile(filename="shipSave", shipID = "S1") -> Ship2:
+def readFromFile(filename: str = "shipSave", shipID: str = None) -> Ship2:
     ship = Ship2(shipID = shipID)
     section = None
 
@@ -264,13 +267,22 @@ def main():
         ship.isShipBalanced(printOutput=True)
         print(f"Ship was balanced after container {k[-1]+1} was loaded.")
         print(f"Total weight of ship: " + str(ship.getTotalWeight()))
-    # ship.saveToFile()
-    # ship2 = readFromFile()
-    # print("Total weight: " + str(ship2.getTotalWeight()))
-    # ship2.saveToFile("shipSave2")
-    # ship.readFromFile()
-    # ship.saveToFile("shipSave2")
-    # add bitwise check
+
+    print()
+    print("Save the ship to file and create a new one from the save file:")
+    ship.saveToFile()
+    ship2 = readFromFile()
+    print(f"Original ship weight: {ship.getTotalWeight()}")
+    print(f"Copy ship weight: {ship2.getTotalWeight()}")
+    print(f"Original ship container count: {ship.countContainers()}")
+    print(f"Copy ship cointainer count: {ship2.countContainers()}")
+
+    ship2.saveToFile("shipSave2")
+    assert filecmp.cmp('shipSave.tsv', 'shipSave2.tsv'), \
+        f"The save file from the copy ship should equal the save file from the original ship"
+    os.remove("shipSave2.tsv")
+    
+    print("Bitwise check of the two saves is identical, as expected.")
 
 
 if __name__ == '__main__':
