@@ -91,6 +91,12 @@ class Ship:
         for section in self.getAllSections():
             if section.lookForContainer(id):
                 return section.removeContainer(id)
+            
+    def emptyShip(self) -> list[Container]:
+        containers = []
+        for section in self.getAllSections():
+            containers += section.emptySection()
+        return containers
 
     def getNumberOfOperationsInShip(self) -> int:
         return sum([shipSection.getNumOperationsInSection()
@@ -287,6 +293,7 @@ def main():
     os.remove("shipSave2.tsv")
     print("Bitwise check of the two saves is identical, as expected.")
     print()
+    print(len(ship.emptyShip()))
 
 if __name__ == '__main__':
     main()

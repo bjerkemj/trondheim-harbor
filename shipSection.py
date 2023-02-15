@@ -75,6 +75,12 @@ class ShipSection:
         for stack in self.getAllStacks():
             if stack.lookForContainer(id):
                 return stack.removeContainer(id)
+    
+    def emptySection(self) -> list[Container]:
+        containers = []
+        for stack in self.getAllStacks():
+            containers += stack.emptyStack()
+        return containers
 
  
     def getStack(self, tuple: tuple) -> ContainerStack:

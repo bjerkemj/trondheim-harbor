@@ -131,7 +131,15 @@ class ContainerStack:
             return popped_containers
         else:
             raise Exception("Can't pop from an empty container")
-
+    
+    def emptyStack(self) -> int:
+        containers = []
+        while not self.isEmpty():
+            poppedContainers = self.popContainer()
+            for container in poppedContainers:
+                containers.append(container)
+        return containers
+    
     def isEmpty(self) -> bool:
         return len(self.containers) == 0
 
