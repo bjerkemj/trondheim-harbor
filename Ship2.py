@@ -281,9 +281,7 @@ def main():
     assert filecmp.cmp('shipSave.tsv', 'shipSave2.tsv'), \
         f"The save file from the copy ship should equal the save file from the original ship"
     os.remove("shipSave2.tsv")
-    
     print("Bitwise check of the two saves is identical, as expected.")
-
 
 if __name__ == '__main__':
     main()
