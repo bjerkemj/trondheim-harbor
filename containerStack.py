@@ -80,6 +80,41 @@ class ContainerStack:
         while len(tempStack) > 0:  # Add containers again in decreasing weight order
             self._pushContainer(tempStack.pop())
 
+    def addContainerFourCranes(self, container: list[Container]) -> int:
+        operations = 0
+        if type(container) is Container:
+            if container.getSize() == 20:
+                raise Exception(
+                    'A single 20 foot container cannot be loaded to a containerStack')
+            else:
+                containerWeight = container.getTotalWeight()
+                container = [container]
+        else:
+            if len(container) == 1:
+                containerWeight = container[0].getTotalWeight()
+            else:  # container is a list of two Containers
+                for c in container:
+                    containerWeight = 0
+                    if c.getSize() == 40:
+                        raise Exception(
+                            'Only two 20-feet containers or 1 40-feet container may be loaded at the same time')
+                    containerWeight += c.getTotalWeight()
+        tempStack = []
+        while containerWeight > self.topWeight and self.topWeight != 0:  # Pop all lighter containers from stack
+            if(len(container) == 2):
+                operations+=2
+            else:
+                operations+=1
+            tempStack.append(self.popContainer())
+        tempStack.append(container)
+        while len(tempStack) > 0:  # Add containers again in decreasing weight order
+            self._pushContainer(tempStack.pop())
+            if(len(container) == 2):
+                operations+=2
+            else:
+                operations+=1
+        return operations
+
     def removeContainer(self, id: str) -> list[Container]:
         if not self.lookForContainer(id):
             return None

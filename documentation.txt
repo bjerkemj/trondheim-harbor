@@ -23,4 +23,6 @@ Task 7,8 and 10 have been done together, as they serve the same purpose. As the 
 Task 9 has been done in ship.py. As the ship is already diveded into sections calculating the balance is straight forward. When the function is called a boolean is retrieved, and if the ship is not balanced a text prompt is given to tell the user what constraint is broken.
 
 2.3 Docks
-Task 11 was done by counting every time a container is moved. We usually use 28000 crane operations which equals approximatly 78 days.
+Task 11 was done by counting every time a container is moved. We usually use 28000 crane operations which equals approximatly 78 days. Unloading a full ship would usually take 6300 crane opereations (one operations per crate). That would result in approximatly 18 days.
+
+Task 12

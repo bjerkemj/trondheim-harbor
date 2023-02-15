@@ -57,6 +57,23 @@ class ShipSection:
                 self.isFull()
             self.updateSectionWeight()
 
+    def addContainerToSectionFourCranes(self, containerList) -> list[tuple, int]:
+        pos = 0
+        operations = 0
+        if self.full:
+            raise Exception(
+                'This section is full. No more containers may be loaded')
+        else:
+            containerStack = self.getLowestWeightContainerStack()
+            pos = containerStack.getLocation()
+            operations = containerStack.addContainerFourCranes(containerList)
+            if (containerStack.isFull()):
+                self.freeContainerStacks.remove(containerStack)
+                self.fullContainerStacks.append(containerStack)
+                self.isFull()
+            self.updateSectionWeight()
+        return [pos, operations]
+
     def getSectionWeight(self) -> int:
         return self.totalWeight
 
