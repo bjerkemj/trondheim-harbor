@@ -31,18 +31,12 @@ class ContainerStack:
             self.topWeight = sum([container.getTotalWeight()
                                   for container in self.containers[-1]])
 
-    def _pushContainer(self, containers) -> None:
-        """ Adds the container/containers to the top of the containerStack and updates the total containerStack weight and the containerStack topWeight
-
-        args:
-        container: Container or list
-            container is either 1 40-feet container or a list containing two 20-feet containers  """
+    def _pushContainer(self, containers: list[Container]) -> None:
         if self.isFull():
             raise Exception(
                 'This containerStack is full -> unable to load another container')
         else:
             if type(containers) is Container:  # containers is one 40 feet container
-
                 self.weight += containers.getTotalWeight()
                 self.containers.append([containers])
                 self.numOperations += 1
@@ -61,7 +55,7 @@ class ContainerStack:
                     self.numOperations += 1
             self._updateTopWeight()
 
-    def addContainer(self, container: list) -> None:
+    def addContainer(self, container: list[Container]) -> None:
         if type(container) is Container:
             if container.getSize() == 20:
                 raise Exception(
@@ -126,7 +120,7 @@ class ContainerStack:
     def getTopWeight(self) -> int:
         return self.topWeight
 
-    def popContainer(self) -> list:
+    def popContainer(self) -> list[Container]:
         if not self.isEmpty():
             popped_containers = self.containers.pop()
             lost_weight = sum([container.getTotalWeight()
@@ -157,7 +151,7 @@ class ContainerStack:
     def getNumOperations(self) -> int:
         return self.numOperations
     
-    def saveToFile(self, filename="containerStackSave"):
+    def saveToFile(self, filename: str = "containerStackSave") -> None:
         with open(os.path.join(ROOT, filename + ".tsv"), "w") as f:
             for containers in self.getContainers():
                 for container in containers:
@@ -168,7 +162,7 @@ class ContainerStack:
                     f.write(str(container.getLoad()) + "\t")
                     f.write("-\t")
 
-    def readFromFile(self, filename="containerStackSave"):
+    def readFromFile(self, filename: str = "containerStackSave") -> None:
         listFor20Containers = []
         containers = []
         with open(os.path.join(ROOT, filename + ".tsv"), "r") as f:
@@ -188,44 +182,3 @@ class ContainerStack:
                 else:
                     listFor20Containers.append(container)
         self.containers = containers
-
-def main():
-    # Initiate stack and import modules for testing
-    import random
-    random.seed(2)
-    from container import createRandomContainers
-
-    stack = ContainerStack(0, (0, 0), 10)
-    
-    #print(stack.peek())
-
-    randomContainer = createRandomContainers(10)
-    randomContainer = [container for container in randomContainer if container.getSize() == 40]
-    for container in randomContainer:
-        stack.addContainer(container)
-    c1 = Container(20, "c1", load=15)
-    c2 = Container(20, "c2", load=15)
-    stack.addContainer([c1, c2])
-    
-    for container in stack.getContainers():
-        container[0].print()
-
-    print(stack.lookForContainer("c1"))
-    print(stack.removeContainer("c1"))
-
-    for container in stack.getContainers():
-        container[0].print()
-
-    print(stack.countContainers())
-
-    stack.saveToFile()
-    print(stack.getContainers())
-    stack2 = ContainerStack(0, (0, 0), 10)
-    stack2.readFromFile()
-    print(stack2.getContainers())
-    stack2.saveToFile("test")
-
-
-
-if __name__ == '__main__':
-    main()
