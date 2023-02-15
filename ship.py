@@ -37,11 +37,11 @@ class Ship:
     def isFull(self) -> bool:
         return len(self.freeSections) == 0
     
+    def getAllSections(self) -> list[ShipSection]:
+        return self.freeSections + self.fullSections
+    
     def getSection(self, sectionId: int) -> list[ShipSection]:
-        for section in self.freeSections:
-            if section.getSectionId() == sectionId:
-                return section
-        for section in self.fullSections:
+        for section in self.getAllSections():
             if section.getSectionId() == sectionId:
                 return section
             
@@ -78,6 +78,19 @@ class Ship:
         if lowestWeightSection.isFull():
             self.freeSections.remove(lowestWeightSection)
             self.fullSections.append(lowestWeightSection)
+    
+    def lookForContainer(self, id: str) -> bool:
+        for section in self.getAllSections():
+            if section.lookForContainer(id):
+                return True
+        return False
+    
+    def removeContainer(self, id: str) -> list[Container]:
+        if not self.lookForContainer(id):
+            return None
+        for section in self.getAllSections():
+            if section.lookForContainer(id):
+                return section.removeContainer(id)
 
     def getNumberOfOperationsInShip(self) -> int:
         return sum([shipSection.getNumOperationsInSection()
@@ -237,6 +250,7 @@ def main():
     randomContainers = createRandomContainers(numContainers)
     start = time.time()
     k = []
+    print(len(ship.getAllSections()))
     try:
         for container in randomContainers:
             ship.addContainer(container)
@@ -272,6 +286,7 @@ def main():
         f"The save file from the copy ship should equal the save file from the original ship"
     os.remove("shipSave2.tsv")
     print("Bitwise check of the two saves is identical, as expected.")
+    print()
 
 if __name__ == '__main__':
     main()

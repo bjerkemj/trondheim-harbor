@@ -80,9 +80,9 @@ class ContainerStack:
         while len(tempStack) > 0:  # Add containers again in decreasing weight order
             self._pushContainer(tempStack.pop())
 
-    def removeContainer(self, id: str) -> list:
+    def removeContainer(self, id: str) -> list[Container]:
         if not self.lookForContainer(id):
-            return
+            return None
         
         tempStack = []
         found = False

@@ -1,4 +1,5 @@
 from containerStack import ContainerStack
+from container import Container
 
 class ShipSection:
     def __init__(self, sectionID: int, width: int, length: int, maxStackHeight):
@@ -67,7 +68,15 @@ class ShipSection:
             if stack.lookForContainer(id):
                 return True
         return False
+    
+    def removeContainer(self, id: str) -> list[Container]:
+        if not self.lookForContainer(id):
+            return None
+        for stack in self.getAllStacks():
+            if stack.lookForContainer(id):
+                return stack.removeContainer(id)
 
+ 
     def getStack(self, tuple: tuple) -> ContainerStack:
         for stack in self.getAllStacks():
            if stack.getLocation() == tuple:
