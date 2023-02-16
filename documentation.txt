@@ -1,7 +1,7 @@
 Tinus F Alsos og Johan Bjerkem
 
 Testing:
-We have tested the files using assertion tests. These tests can be found in the folder tests. Here you can run the tests for each file induvidually. Other then that we have a main method in the ship.py which simulates the loading of a ship. This main method prints the results and was a sanity check that our program runs as expected.
+We have tested the files using assertion tests. These tests can be found in the folder tests. Here you can run the tests for each file induvidually. Other then that we have a main method in the ship.py which simulates the loading of a ship. This main method prints the results and was a sanity check that our program runs as expected. The ship in the main function is loaded with containers created randomly. Feel free to change the seed and verify that the program runs as expected.
 
 Error handling:
 There isn't a lot of error handling in the code. This is because the program is to be viewed as a contract between the creator and user. The user is expected to read this file and the code to be able to use the program as intended. The user can also look at the main in ship.py to see how one uses the program with regards to ship handeling.
@@ -25,4 +25,4 @@ Task 9 has been done in ship.py. As the ship is already diveded into sections ca
 2.3 Docks
 Task 11 was done by counting every time a container is moved. We usually use 28000 crane operations which equals approximatly 78 days. Unloading a full ship would usually take 6300 crane opereations (one operations per crate). That would result in approximatly 18 days.
 
-Task 12
+Task 12 was done by creating new functions that take into account that four cranes is being used. The function returns a four lists with the activity of each crane, meaning at which time they operated which cell. We run through this crane activity and if two cranes operate in adjecent bays we add a punishment operation. This is not a perfect solution but gives a pretty good estiamtion of how long time it would take. On the example in the main of ship one crane uses 108316 minutes and four cranes takes 31812 minutes. This mean it takes between 1/4 and 1/3 of the time using four cranes compared to one.

@@ -1,5 +1,4 @@
-from container import Container
-from container import createRandomContainers
+from container import Container, createRandomContainers
 from shipSection import ShipSection
 from containerStack import ContainerStack
 
@@ -78,6 +77,10 @@ class Ship:
         if lowestWeightSection.isFull():
             self.freeSections.remove(lowestWeightSection)
             self.fullSections.append(lowestWeightSection)
+
+    def addContainers(self, containers: list[Container]):
+        for container in containers:
+            self.addContainer(container)
     
     def lookForContainer(self, id: str) -> bool:
         for section in self.getAllSections():
@@ -85,7 +88,7 @@ class Ship:
                 return True
         return False
     
-    def addContainerFourCranes(self, containers: list[Container]) -> None:
+    def addContainersFourCranes(self, containers: list[Container]) -> None:
         craneActivity = [[],[],[],[]]
         info = None
         crane = None
@@ -307,7 +310,6 @@ def fourCraneNumOfOps(craneActivity: list[list[tuple]]) -> int:
     for i, ca in enumerate(craneActivity):
         ca = (ca + maxNum * [None])[:maxNum]
         craneActivity[i] = ca
-    print(totalOperations)
     for i in range(maxNum):
         if (craneActivity[0][i] and craneActivity[1][i]) and (craneActivity[0][i][0]==craneActivity[1][i][0]) and (craneActivity[0][i][1]+1==craneActivity[1][i][1]):
             totalOperations+=1
@@ -315,56 +317,77 @@ def fourCraneNumOfOps(craneActivity: list[list[tuple]]) -> int:
             totalOperations+=1
         if (craneActivity[2][i] and craneActivity[3][i]) and (craneActivity[2][i][0]==craneActivity[3][i][0]) and (craneActivity[2][i][1]+1==craneActivity[3][i][1]):
             totalOperations+=1
-    print(totalOperations)
+    return totalOperations
 
 def main():
     random.seed(1)
     ship = Ship()
+    shipFourCranes = Ship()
     numContainers = 20000
     randomContainers = createRandomContainers(numContainers)
-    fourCraneNumOfOps(ship.addContainerFourCranes(randomContainers))
-    print(ship.countContainers())
-    # start = time.time()
-    # k = []
-    # print(len(ship.getAllSections()))
-    # try:
-    #     for container in randomContainers:
-    #         ship.addContainer(container)
-    #         if not ship.isShipBalanced():
-    #             k.append(ship.countContainers())
-    # except Exception as e:
-    #     print('Unable to load all containers. The following exception was thrown:')
-    #     print(e)
+    start = time.time()
+    k = []
+    try:
+        for container in randomContainers:
+            ship.addContainer(container)
+            if not ship.isShipBalanced():
+                k.append(ship.countContainers())
+    except Exception as e:
+        print('Unable to load all containers. The following exception was thrown:')
+        print(e)
 
-    # finally:
-    #     end = time.time()
-    #     print(f'Script took {end - start:0f} seconds')
-    #     print()
-    #     print("Statistics of the shipload:")
-    #     print(f"Number of crane operations using a single crane : {ship.getNumberOfOperationsInShip()}")
-    #     print(f"Minutes spent loading ship: {ship.getNumberOfOperationsInShip()*4}")
-    #     print(f"Minutes it would take unloading using a single crane: {ship.countContainers()*4}")
-    #     print(f"Containers loaded: {ship.countContainers()}")
-    #     ship.isShipBalanced(printOutput=True)
-    #     print(f"Ship was balanced after container {k[-1]+1} was loaded.")
-    #     print(f"Total weight of ship: " + str(ship.getTotalWeight()))
+    finally:
+        end = time.time()
+        print(f'Script took {end - start:0f} seconds')
+        print()
+        print("Statistics of the shipload with one crane:")
+        print(f"Number of crane operations using a single crane : {ship.getNumberOfOperationsInShip()}")
+        print(f"Minutes spent loading ship: {ship.getNumberOfOperationsInShip()*4}")
+        print(f"Minutes it would take unloading using a single crane: {ship.countContainers()*4}")
+        print(f"Containers loaded: {ship.countContainers()}")
+        ship.isShipBalanced(printOutput=True)
+        print(f"Ship was balanced after container {k[-1]+1} was loaded.")
+        print(f"Total weight of ship: " + str(ship.getTotalWeight()))
 
-    # print()
-    # print("Save the ship to file and create a new one from the save file:")
-    # ship.saveToFile()
-    # ship2 = readFromFile()
-    # print(f"Original ship weight: {ship.getTotalWeight()}")
-    # print(f"Copy ship weight: {ship2.getTotalWeight()}")
-    # print(f"Original ship container count: {ship.countContainers()}")
-    # print(f"Copy ship cointainer count: {ship2.countContainers()}")
+    print()
+    print("Statistics of the shipload with four cranes:")
+    operations = fourCraneNumOfOps(shipFourCranes.addContainersFourCranes(randomContainers))
+    print(f"Number of crane operations using a four cranes: {operations}")
+    print(f"Minutes spent loading ship: {operations*4}")
+    print(f"Containers loaded: {shipFourCranes.countContainers()}")
+    shipFourCranes.isShipBalanced(printOutput=True)
+    print(f"Ship was balanced after container {k[-1]+1} was loaded.")
+    print(f"Total weight of ship: " + str(shipFourCranes.getTotalWeight()))
 
-    # ship2.saveToFile("shipSave2")
-    # assert filecmp.cmp('shipSave.tsv', 'shipSave2.tsv'), \
-    #     f"The save file from the copy ship should equal the save file from the original ship"
-    # os.remove("shipSave2.tsv")
-    # print("Bitwise check of the two saves is identical, as expected.")
-    # print()
-    # print(len(ship.emptyShip()))
+
+    print()
+    print("Save the ship to file and create a new one from the save file:")
+    ship.saveToFile()
+    ship2 = readFromFile()
+    print(f"Original ship weight: {ship.getTotalWeight()}")
+    print(f"Copy ship weight: {ship2.getTotalWeight()}")
+    print(f"Original ship container count: {ship.countContainers()}")
+    print(f"Copy ship cointainer count: {ship2.countContainers()}")
+
+    ship2.saveToFile("shipSave2")
+    assert filecmp.cmp('shipSave.tsv', 'shipSave2.tsv'), \
+        f"The save file from the copy ship should equal the save file from the original ship"
+    os.remove("shipSave2.tsv")
+    print("Bitwise check of the two saves is identical, as expected.")
+    print()
+
+    print("Ship where we add 1000 empty containers, then 1000 full containers:")
+    stressTestShip = Ship()
+    stressTestContainers = []
+    stressTestContainers += [Container(40, "FAKEID", 0)]*1000
+    stressTestContainers += [Container(40, "FAKEID", 22)]*1000
+    stressTestShip.addContainers(stressTestContainers)
+    stressTestShip.isShipBalanced(printOutput= True)
+    print(f"Ship contains: {stressTestShip.countContainers()} containers")
+    print(f"One crane used: {stressTestShip.getNumberOfOperationsInShip()} operations")
+    print(f"This number is as expected. First 1000 containers are loaded using 1000 operations. Then 1000 more containers are loaded using 1000 more operations. Since the 1000 last are heavier, they need to be placed below the inital 1000 containers. Each level in the ship is 22*12=264 containers (only loading 40ft containers). That means the heavy containers need to move 1000/264=3.787 in each stack to be place on the bottom (container need to be moved both in and out). This results in 1000 + 1000 + 3.787*1000 = 9574 which is roughly equal to 9552 operations.")
+
+
 
 if __name__ == '__main__':
     main()
