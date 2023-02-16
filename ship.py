@@ -10,10 +10,11 @@ import time
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
+
 class Ship:
     defaultDimensions = {"L": 24, "W": 22, "H": 18}
 
-    def __init__(self, dimensions: dict = defaultDimensions, shipID: str=None):
+    def __init__(self, dimensions: dict = defaultDimensions, shipID: str = None):
         self.dimensions = dimensions
         self.shipID = shipID
         self.height = dimensions['H']
@@ -35,15 +36,15 @@ class Ship:
 
     def isFull(self) -> bool:
         return len(self.freeSections) == 0
-    
-    def getAllSections(self) -> list[ShipSection]:
+
+    def getAllSections(self) -> 'list[ShipSection]':
         return self.freeSections + self.fullSections
-    
-    def getSection(self, sectionId: int) -> list[ShipSection]:
+
+    def getSection(self, sectionId: int) -> 'list[ShipSection]':
         for section in self.getAllSections():
             if section.getSectionId() == sectionId:
                 return section
-            
+
     def setSection(self, sectionId: int, newSection: ShipSection) -> None:
         for section in self.freeSections:
             if section.getSectionId() == sectionId:
@@ -51,7 +52,7 @@ class Ship:
         for section in self.fullSections:
             if section.getSectionId() == sectionId:
                 self.fullSections.remove(section)
-        
+
         if newSection.isFull():
             self.fullSections.append(newSection)
         else:
@@ -78,18 +79,18 @@ class Ship:
             self.freeSections.remove(lowestWeightSection)
             self.fullSections.append(lowestWeightSection)
 
-    def addContainers(self, containers: list[Container]):
+    def addContainers(self, containers: 'list[Container]'):
         for container in containers:
             self.addContainer(container)
-    
+
     def lookForContainer(self, id: str) -> bool:
         for section in self.getAllSections():
             if section.lookForContainer(id):
                 return True
         return False
-    
-    def addContainersFourCranes(self, containers: list[Container]) -> None:
-        craneActivity = [[],[],[],[]]
+
+    def addContainersFourCranes(self, containers: 'list[Container]') -> None:
+        craneActivity = [[], [], [], []]
         info = None
         crane = None
 
@@ -97,17 +98,19 @@ class Ship:
             if self.isFull():
                 print('Ship is full, no more containers may be added')
                 return craneActivity
-            
+
             lowestWeightSection = self.getLowestWeightShipSection()
             section = lowestWeightSection.getSectionId()
             if container.size == 20:
                 if self.holdingSpot:
                     containers = [self.holdingSpot.pop(), container]
-                    info = lowestWeightSection.addContainerToSectionFourCranes(containers)
+                    info = lowestWeightSection.addContainerToSectionFourCranes(
+                        containers)
                 else:
                     self.holdingSpot.append(container)
             else:
-                info = lowestWeightSection.addContainerToSectionFourCranes(container)
+                info = lowestWeightSection.addContainerToSectionFourCranes(
+                    container)
             if lowestWeightSection.isFull():
                 self.freeSections.remove(lowestWeightSection)
                 self.fullSections.append(lowestWeightSection)
@@ -117,7 +120,7 @@ class Ship:
                 if section == 2 or section == 4 or section == 6:
                     info[0] = (info[0][0]+11, lengthPos)
                 if section == 1 or section == 2:
-                    if lengthPos==3:
+                    if lengthPos == 3:
                         crane = 1
                     else:
                         crane = 0
@@ -139,15 +142,14 @@ class Ship:
                 crane = None
         return craneActivity
 
-    
-    def removeContainer(self, id: str) -> list[Container]:
+    def removeContainer(self, id: str) -> 'list[Container]':
         if not self.lookForContainer(id):
             return None
         for section in self.getAllSections():
             if section.lookForContainer(id):
                 return section.removeContainer(id)
-            
-    def emptyShip(self) -> list[Container]:
+
+    def emptyShip(self) -> 'list[Container]':
         containers = []
         for section in self.getAllSections():
             containers += section.emptySection()
@@ -165,7 +167,7 @@ class Ship:
             count += section.countContainers()
         return count
 
-    def getAllSections(self) -> list[ShipSection]:
+    def getAllSections(self) -> 'list[ShipSection]':
         allSections = []
         for section in self.freeSections:
             allSections.append(section)
@@ -196,7 +198,7 @@ class Ship:
                 totalWeightPort += section.getSectionWeight()
         return totalWeightPort
 
-    def getTotalWeightSections(self) -> list[int]:
+    def getTotalWeightSections(self) -> 'list[int]':
         sectionWeights = [0, 0, 0]
         allSections = self.getAllSections()
         for section in allSections:
@@ -209,7 +211,7 @@ class Ship:
                 sectionWeights[2] += section.getSectionWeight()
         return sectionWeights
 
-    def isShipBalanced(self, x_perc=0.05, y_perc=0.1, printOutput:bool = False) -> bool:
+    def isShipBalanced(self, x_perc=0.05, y_perc=0.1, printOutput: bool = False) -> bool:
         weightPortside = self.getTotalWeightPort()
         weightStarboard = self.getTotalWeightStarboard()
         weightSection = self.getTotalWeightSections()
@@ -261,8 +263,9 @@ class Ship:
                                 f.write("-\t")
                         f.write("\n")
 
+
 def readFromFile(filename: str = "shipSave", shipID: str = None) -> Ship:
-    ship = Ship(shipID = shipID)
+    ship = Ship(shipID=shipID)
     section = None
 
     with open(os.path.join(ROOT, filename + ".tsv"), "r") as f:
@@ -273,51 +276,56 @@ def readFromFile(filename: str = "shipSave", shipID: str = None) -> Ship:
         for line in f:
             if line.startswith("Section: "):
                 if section:
-                    #print(section.getSectionWeight())
+                    # print(section.getSectionWeight())
                     ship.setSection(sectionId, section)
-                    #print(ship.getSection(sectionId).getSectionWeight())
+                    # print(ship.getSection(sectionId).getSectionWeight())
                 sectionId = int(line[9])
-                section = ShipSection(sectionId, int(ship.defaultDimensions['W']/2), int(ship.defaultDimensions['L']/6), int(ship.defaultDimensions['H']))
+                section = ShipSection(sectionId, int(ship.defaultDimensions['W']/2), int(
+                    ship.defaultDimensions['L']/6), int(ship.defaultDimensions['H']))
                 width = section.getWidth()
                 lengthCounter = 0
                 continue
-            stack = ContainerStack(sectionId, (widthCounter, lengthCounter), ship.defaultDimensions['H'])
+            stack = ContainerStack(
+                sectionId, (widthCounter, lengthCounter), ship.defaultDimensions['H'])
             rowInfo = line.split("-")
             for info in rowInfo:
                 infoSplitted = info.strip("\n").strip("\t").split("\t")
-                if(len(infoSplitted)==1):
+                if(len(infoSplitted) == 1):
                     continue
-                container = Container(int(infoSplitted[1]), infoSplitted[0], int(infoSplitted[4]))
-                if container.getSize()==40:
+                container = Container(
+                    int(infoSplitted[1]), infoSplitted[0], int(infoSplitted[4]))
+                if container.getSize() == 40:
                     stack.addContainer([container])
-                elif container.getSize()==20 and listFor20Containers:
+                elif container.getSize() == 20 and listFor20Containers:
                     listFor20Containers.append(container)
                     stack.addContainer(listFor20Containers)
                     listFor20Containers = []
                 else:
                     listFor20Containers.append(container)
             section.setStack((widthCounter, lengthCounter), stack)
-            widthCounter+=1
+            widthCounter += 1
             if widthCounter == width:
-                widthCounter=0
-                lengthCounter+=1
+                widthCounter = 0
+                lengthCounter += 1
     ship.setSection(sectionId, section)
     return ship
 
-def fourCraneNumOfOps(craneActivity: list[list[tuple]]) -> int:
+
+def fourCraneNumOfOps(craneActivity: 'list[list[tuple]]') -> int:
     totalOperations = max([len(ca) for ca in craneActivity])
     maxNum = max([len(ca) for ca in craneActivity])
     for i, ca in enumerate(craneActivity):
         ca = (ca + maxNum * [None])[:maxNum]
         craneActivity[i] = ca
     for i in range(maxNum):
-        if (craneActivity[0][i] and craneActivity[1][i]) and (craneActivity[0][i][0]==craneActivity[1][i][0]) and (craneActivity[0][i][1]+1==craneActivity[1][i][1]):
-            totalOperations+=1
-        if (craneActivity[1][i] and craneActivity[2][i]) and (craneActivity[1][i][0]==craneActivity[2][i][0]) and (craneActivity[1][i][1]+1==craneActivity[2][i][1]):
-            totalOperations+=1
-        if (craneActivity[2][i] and craneActivity[3][i]) and (craneActivity[2][i][0]==craneActivity[3][i][0]) and (craneActivity[2][i][1]+1==craneActivity[3][i][1]):
-            totalOperations+=1
+        if (craneActivity[0][i] and craneActivity[1][i]) and (craneActivity[0][i][0] == craneActivity[1][i][0]) and (craneActivity[0][i][1]+1 == craneActivity[1][i][1]):
+            totalOperations += 1
+        if (craneActivity[1][i] and craneActivity[2][i]) and (craneActivity[1][i][0] == craneActivity[2][i][0]) and (craneActivity[1][i][1]+1 == craneActivity[2][i][1]):
+            totalOperations += 1
+        if (craneActivity[2][i] and craneActivity[3][i]) and (craneActivity[2][i][0] == craneActivity[3][i][0]) and (craneActivity[2][i][1]+1 == craneActivity[3][i][1]):
+            totalOperations += 1
     return totalOperations
+
 
 def main():
     random.seed(1)
@@ -341,9 +349,12 @@ def main():
         print(f'Script took {end - start:0f} seconds')
         print()
         print("Statistics of the shipload with one crane:")
-        print(f"Number of crane operations using a single crane : {ship.getNumberOfOperationsInShip()}")
-        print(f"Minutes spent loading ship: {ship.getNumberOfOperationsInShip()*4}")
-        print(f"Minutes it would take unloading using a single crane: {ship.countContainers()*4}")
+        print(
+            f"Number of crane operations using a single crane : {ship.getNumberOfOperationsInShip()}")
+        print(
+            f"Minutes spent loading ship: {ship.getNumberOfOperationsInShip()*4}")
+        print(
+            f"Minutes it would take unloading using a single crane: {ship.countContainers()*4}")
         print(f"Containers loaded: {ship.countContainers()}")
         ship.isShipBalanced(printOutput=True)
         print(f"Ship was balanced after container {k[-1]+1} was loaded.")
@@ -351,14 +362,14 @@ def main():
 
     print()
     print("Statistics of the shipload with four cranes:")
-    operations = fourCraneNumOfOps(shipFourCranes.addContainersFourCranes(randomContainers))
+    operations = fourCraneNumOfOps(
+        shipFourCranes.addContainersFourCranes(randomContainers))
     print(f"Number of crane operations using a four cranes: {operations}")
     print(f"Minutes spent loading ship: {operations*4}")
     print(f"Containers loaded: {shipFourCranes.countContainers()}")
     shipFourCranes.isShipBalanced(printOutput=True)
     print(f"Ship was balanced after container {k[-1]+1} was loaded.")
     print(f"Total weight of ship: " + str(shipFourCranes.getTotalWeight()))
-
 
     print()
     print("Save the ship to file and create a new one from the save file:")
@@ -382,11 +393,11 @@ def main():
     stressTestContainers += [Container(40, "FAKEID", 0)]*1000
     stressTestContainers += [Container(40, "FAKEID", 22)]*1000
     stressTestShip.addContainers(stressTestContainers)
-    stressTestShip.isShipBalanced(printOutput= True)
+    stressTestShip.isShipBalanced(printOutput=True)
     print(f"Ship contains: {stressTestShip.countContainers()} containers")
-    print(f"One crane used: {stressTestShip.getNumberOfOperationsInShip()} operations")
+    print(
+        f"One crane used: {stressTestShip.getNumberOfOperationsInShip()} operations")
     print(f"This number is as expected. First 1000 containers are loaded using 1000 operations. Then 1000 more containers are loaded using 1000 more operations. Since the 1000 last are heavier, they need to be placed below the inital 1000 containers. Each level in the ship is 22*12=264 containers (only loading 40ft containers). That means the heavy containers need to move 1000/264=3.787 in each stack to be place on the bottom (container need to be moved both in and out). This results in 1000 + 1000 + 3.787*1000 = 9574 which is roughly equal to 9552 operations.")
-
 
 
 if __name__ == '__main__':

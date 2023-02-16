@@ -1,7 +1,7 @@
+from container import Container
 import os
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
-from container import Container
 
 class ContainerStack:
     def __init__(self, section: int, loc: tuple, maxHeight: int) -> None:
@@ -14,11 +14,11 @@ class ContainerStack:
 
     def getContainers(self) -> list:
         return self.containers
-    
+
     def countContainers(self) -> int:
         count = 0
         for containerList in self.containers:
-            count+=len(containerList)
+            count += len(containerList)
         return count
 
     def getLocation(self) -> tuple:
@@ -31,7 +31,7 @@ class ContainerStack:
             self.topWeight = sum([container.getTotalWeight()
                                   for container in self.containers[-1]])
 
-    def _pushContainer(self, containers: list[Container]) -> None:
+    def _pushContainer(self, containers: 'list[Container]') -> None:
         if self.isFull():
             raise Exception(
                 'This containerStack is full -> unable to load another container')
@@ -55,7 +55,7 @@ class ContainerStack:
                     self.numOperations += 1
             self._updateTopWeight()
 
-    def addContainer(self, container: list[Container]) -> None:
+    def addContainer(self, container: 'list[Container]') -> None:
         if type(container) is Container:
             if container.getSize() == 20:
                 raise Exception(
@@ -80,7 +80,7 @@ class ContainerStack:
         while len(tempStack) > 0:  # Add containers again in decreasing weight order
             self._pushContainer(tempStack.pop())
 
-    def addContainerFourCranes(self, container: list[Container]) -> int:
+    def addContainerFourCranes(self, container: 'list[Container]') -> int:
         operations = 0
         if type(container) is Container:
             if container.getSize() == 20:
@@ -102,23 +102,23 @@ class ContainerStack:
         tempStack = []
         while containerWeight > self.topWeight and self.topWeight != 0:  # Pop all lighter containers from stack
             if(len(container) == 2):
-                operations+=2
+                operations += 2
             else:
-                operations+=1
+                operations += 1
             tempStack.append(self.popContainer())
         tempStack.append(container)
         while len(tempStack) > 0:  # Add containers again in decreasing weight order
             self._pushContainer(tempStack.pop())
             if(len(container) == 2):
-                operations+=2
+                operations += 2
             else:
-                operations+=1
+                operations += 1
         return operations
 
-    def removeContainer(self, id: str) -> list[Container]:
+    def removeContainer(self, id: str) -> 'list[Container]':
         if not self.lookForContainer(id):
             return None
-        
+
         tempStack = []
         found = False
 
@@ -135,7 +135,7 @@ class ContainerStack:
                 else:
                     tempStack.append(containerList)
 
-        while len(tempStack) > 0: 
+        while len(tempStack) > 0:
             self._pushContainer(tempStack.pop())
         return containerList
 
@@ -155,7 +155,7 @@ class ContainerStack:
     def getTopWeight(self) -> int:
         return self.topWeight
 
-    def popContainer(self) -> list[Container]:
+    def popContainer(self) -> 'list[Container]':
         if not self.isEmpty():
             popped_containers = self.containers.pop()
             lost_weight = sum([container.getTotalWeight()
@@ -166,7 +166,7 @@ class ContainerStack:
             return popped_containers
         else:
             raise Exception("Can't pop from an empty container")
-    
+
     def emptyStack(self) -> int:
         containers = []
         while not self.isEmpty():
@@ -174,7 +174,7 @@ class ContainerStack:
             for container in poppedContainers:
                 containers.append(container)
         return containers
-    
+
     def isEmpty(self) -> bool:
         return len(self.containers) == 0
 
@@ -193,7 +193,7 @@ class ContainerStack:
 
     def getNumOperations(self) -> int:
         return self.numOperations
-    
+
     def saveToFile(self, filename: str = "containerStackSave") -> None:
         with open(os.path.join(ROOT, filename + ".tsv"), "w") as f:
             for containers in self.getContainers():
@@ -213,12 +213,13 @@ class ContainerStack:
             rowInfo = line.split("-")
             for info in rowInfo:
                 infoSplitted = info.strip("\n").strip("\t").split("\t")
-                if(len(infoSplitted)==1):
+                if(len(infoSplitted) == 1):
                     continue
-                container = Container(int(infoSplitted[1]), infoSplitted[0], int(infoSplitted[4]))
-                if container.getSize()==40:
+                container = Container(
+                    int(infoSplitted[1]), infoSplitted[0], int(infoSplitted[4]))
+                if container.getSize() == 40:
                     containers.append([container])
-                elif container.getSize()==20 and listFor20Containers:
+                elif container.getSize() == 20 and listFor20Containers:
                     listFor20Containers.append(container)
                     containers.append(listFor20Containers)
                     listFor20Containers = []
