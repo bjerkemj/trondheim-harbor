@@ -1,34 +1,7 @@
 from containerStack import ContainerStack
-
+from container import Container
 
 class ShipSection:
-
-    """ A class resperesenting a segment of the ship.
-
-    params:
-    SectionID: int
-        Section number
-    containerStacks: list
-        list of containerStacks within this section
-    totalWeight: int
-        The total weight of this Ship Section
-    maxStackHeight: int
-        the maximum height of the stacks in this ship
-    width: int
-        The width of the section
-    length: int
-        The length of the section
-    freeContainerStacks: list
-        A list of ContainerStacks that are not full
-    fullContainerStacks: list
-        A list of ContainerStacks 
-    numStacks: int
-        Number of stacks in this section
-    full: boolean
-        True if no more containers can be added to Section
-
-    """
-
     def __init__(self, sectionID: int, width: int, length: int, maxStackHeight):
         self.freeContainerStacks = []
         self.fullContainerStacks = []
@@ -44,6 +17,9 @@ class ShipSection:
                     sectionID, (w, l), maxStackHeight))
         self.full = len(self.freeContainerStacks) == 0
 
+    def getAllStacks(self) -> list[ContainerStack]:
+        return self.freeContainerStacks + self.fullContainerStacks
+
     def getSectionId(self) -> int:
         return self.sectionID
     
@@ -57,8 +33,7 @@ class ShipSection:
         return self.maxStackHeight
 
     def updateSectionWeight(self) -> None:
-        self.totalWeight = sum([containerStack.getTotalWeight() for containerStack in self.freeContainerStacks]) + sum(
-            [containerStack.getTotalWeight() for containerStack in self.fullContainerStacks])
+        self.totalWeight = sum([containerStack.getTotalWeight() for containerStack in self.getAllStacks()])
 
     def getLowestWeightContainerStack(self) -> ContainerStack:
         containerStackWeights = [stack.getTotalWeight()
@@ -82,19 +57,53 @@ class ShipSection:
                 self.isFull()
             self.updateSectionWeight()
 
+    def addContainerToSectionFourCranes(self, containerList) -> list[tuple, int]:
+        pos = 0
+        operations = 0
+        if self.full:
+            raise Exception(
+                'This section is full. No more containers may be loaded')
+        else:
+            containerStack = self.getLowestWeightContainerStack()
+            pos = containerStack.getLocation()
+            operations = containerStack.addContainerFourCranes(containerList)
+            if (containerStack.isFull()):
+                self.freeContainerStacks.remove(containerStack)
+                self.fullContainerStacks.append(containerStack)
+                self.isFull()
+            self.updateSectionWeight()
+        return [pos, operations]
+
     def getSectionWeight(self) -> int:
         return self.totalWeight
 
     def getNumOperationsInSection(self) -> int:
-        return sum([containerStack.getNumOperations() for containerStack in self.freeContainerStacks]) + sum([containerStack.getNumOperations() for containerStack in self.fullContainerStacks])
+        return sum([containerStack.getNumOperations() for containerStack in self.getAllStacks()])
     
+    def lookForContainer(self, id: str) -> bool:
+        for stack in self.getAllStacks():
+            if stack.lookForContainer(id):
+                return True
+        return False
+    
+    def removeContainer(self, id: str) -> list[Container]:
+        if not self.lookForContainer(id):
+            return None
+        for stack in self.getAllStacks():
+            if stack.lookForContainer(id):
+                return stack.removeContainer(id)
+    
+    def emptySection(self) -> list[Container]:
+        containers = []
+        for stack in self.getAllStacks():
+            containers += stack.emptyStack()
+        return containers
+
+ 
     def getStack(self, tuple: tuple) -> ContainerStack:
-        for stack in self.freeContainerStacks:
-            if stack.getLocation() == tuple:
-                return stack
-        for stack in self.fullContainerStacks:
-            if stack.getLocation() == tuple:
-                return stack
+        for stack in self.getAllStacks():
+           if stack.getLocation() == tuple:
+                return stack 
         
     def setStack(self, tuple: tuple, newStack: ContainerStack) -> None:
         for stack in self.freeContainerStacks:
@@ -111,7 +120,6 @@ class ShipSection:
 
     def countContainers(self):
         count=0
-        allStacks = self.freeContainerStacks + self.fullContainerStacks
-        for stack in allStacks:
+        for stack in self.getAllStacks():
             count+=stack.countContainers()
         return count

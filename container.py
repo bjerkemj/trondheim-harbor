@@ -18,21 +18,21 @@ size40 = {
 containerInfos = [size20, size40]
 
 
-def doesSizeExist(sizeInt):
+def doesSizeExist(sizeInt: int) -> bool:
     for info in containerInfos:
         if info["size"] == sizeInt:
             return True
     return False
 
 
-def getContainerWeight(sizeInt):
+def getContainerWeight(sizeInt: int) -> int:
     for info in containerInfos:
         if info["size"] == sizeInt:
             return info["weight"]
     raise Exception("Can't find the container size")
 
 
-def getContainerCapacity(sizeInt):
+def getContainerCapacity(sizeInt: int) -> int:
     for info in containerInfos:
         if info["size"] == sizeInt:
             return info["capacity"]
@@ -42,7 +42,7 @@ def getContainerCapacity(sizeInt):
 # ------------
 
 class Container:
-    def __init__(self, size, id, load=0):
+    def __init__(self, size: int, id: str, load: int =0):
         if not doesSizeExist(size):
             print(doesSizeExist(size))
             raise Exception("Invalid container size")
@@ -52,27 +52,27 @@ class Container:
         self.capacity = getContainerCapacity(size)
         self.load = load
 
-    def getId(self):
+    def getId(self) -> str:
         return self.id
 
-    def getSize(self):
+    def getSize(self) -> int:
         return self.size
 
-    def getWeight(self):
+    def getWeight(self) -> int:
         return self.weight
 
-    def getCapacity(self):
+    def getCapacity(self) -> int:
         return self.capacity
 
-    def getLoad(self):
+    def getLoad(self) -> int:
         return self.load
 
-    def setLoad(self, loadInt):
+    def setLoad(self, loadInt: int) -> None:
         if loadInt > self.capacity:
             raise Exception("To big load")
         self.load = loadInt
 
-    def getTotalWeight(self):
+    def getTotalWeight(self) -> int:
         return self.load + self.weight
 
     def print(self):
@@ -82,52 +82,20 @@ class Container:
 # 2. Random container functions
 # -----------------------------
 
-def createRandomContainer():
+def createRandomContainer() -> Container:
     size = containerInfos[random.randint(0, len(containerInfos)-1)]["size"]
     container = Container(size, createContainerId(), )
     container.setLoad(random.randint(0, container.getCapacity()))
     return container
 
-def createRandomContainers(numberOfContainers):
+def createRandomContainers(numberOfContainers) -> list[Container]:
     containers = []
     for i in range(numberOfContainers):
         containers.append(createRandomContainer())
     return containers
 
-def createContainerId():
+def createContainerId() -> str:
     id = "JTLU"
     for _ in range(6):
         id += str(random.randint(0, 9))
     return id
-
-# 3. Main
-# -------
-
-if __name__ == '__main__':
-    # Single container test
-    print("Single container test")
-    c1 = Container(20, "ID1", 5)
-    print("ID1 = " + c1.getId())
-    print("20 = " + str(c1.getCapacity()))
-    print("5 = " + str(c1.getLoad()))
-    print("7 = " + str(c1.getTotalWeight()))
-    print("2 = " + str(c1.getWeight()))
-    c1.print()
-    c1.setLoad(20)
-    print("20 = " + str(c1.getLoad()))
-    print("22 = " + str(c1.getTotalWeight()))
-    c2 = Container(40, "ID2", 7)
-    c2.print()
-
-    print()
-
-    # Random container test
-    random.seed(1)
-    print("Random container test")
-    r1 = createRandomContainer()
-    r1.print()
-    r1.setLoad(10)
-    print("10 = " + str(r1.getLoad()))
-    randomContainer = createRandomContainers(5)
-    for container in randomContainer:
-        container.print()

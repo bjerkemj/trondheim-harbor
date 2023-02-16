@@ -1,8 +1,12 @@
-from containerStack import ContainerStack
-from container import Container
-import unittest
-import math
+import sys
+import os
+ROOT = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, ROOT+"/..")
 
+from container import Container
+from containerStack import ContainerStack
+import math
+import filecmp
 
 def testDecreasingOrder(containerStack: ContainerStack):
     containerList = containerStack.getContainers()
@@ -18,9 +22,8 @@ def testDecreasingOrder(containerStack: ContainerStack):
 
 
 def main():
-    print('-'*10, 'Testing containerStack', '-'*10)
-
-    # Setup
+    # 0. Setup
+    # --------
     section = 0
     loc = (0, 0)
     maxHeight = 10
@@ -92,18 +95,13 @@ def main():
         f"Total container stack weight should be 7 but was {containerStack.getTopWeight()}"
     assert containerStack.getNumOperations() == 21, \
         f"Total number of operations performed on container stack should be 21 but was {containerStack.getNumOperations()}"
+    
+    containerStack.saveToFile("containerStackTestTemp")
+    assert filecmp.cmp('containerStackTestTemp.tsv', 'containerStackTestOriginal.tsv'), \
+        f"The file created should have identical content to the original save file"
+    os.remove("containerStackTestTemp.tsv")
+    
+    print('containerStackTest.py tests passed')
 
-    print('Weight management test passed')
-
-    # 2.
-    # -----------------------------
-
-    # print(weights)
-
-
-    # 1. Test ship weight functions
-    # -----------------------------
-    # 1. Test ship weight functions
-    # -----------------------------
 if __name__ == '__main__':
     main()
