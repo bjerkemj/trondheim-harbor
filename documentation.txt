@@ -12,6 +12,7 @@ Task 1 and 3 have been done in container.py. We created container as a class whe
 Task 2 and 4 have been done in containerStack.py. The datastructure is created with the future architecture of the ship in mind. Therefore each level in a stack contains either a 40ft container or two 20ft containers. This means removing a 20ft container results in both containers at the same level being retrieved, so that the user of the program can decide what to do with the other container. Each stack is imagined to be handled by a crane, so to remove a container at the bottom, all the container on top need to be moved first.
 
 2.2 Ships 
+WRITE ASSUMPTION ABOUT LENGTH, WIDTH AND HEIGHT
 Task 5 has been done the containerStack.py, shipSection.py and ship.py. This is a hierarchical structure where a Ship has 6 ShipSections and each ShipSection has one ContainerStack for each cell in base of the ship. When a 20ft container is loaded we wait for the next one so we can ensure that there a no holes. 
 
 Task 6 has been done in ship.py. Each line in the tsv file represents a stack in ascending order. The sections are seperated by a line of text indicating which section the containers belong to. This structure makes it possible to also read from file to recreate the ship. readFromFile() return a ship.
